@@ -1,5 +1,3 @@
-"use client"
-
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
@@ -22,7 +20,6 @@ export default function AISettingsPage() {
 
   const handleSave = () => {
     setIsSaving(true)
-    // Simulate API call
     setTimeout(() => {
       setIsSaving(false)
     }, 1000)
@@ -30,53 +27,53 @@ export default function AISettingsPage() {
 
   return (
     <div className="flex flex-col gap-4">
-      <h2 className="text-2xl font-bold tracking-tight">AI System Settings</h2>
+      <h2 className="text-2xl font-bold tracking-tight">Configurações da IA</h2>
 
       <Alert>
         <AlertCircle className="h-4 w-4" />
-        <AlertTitle>Important</AlertTitle>
+        <AlertTitle>Importante</AlertTitle>
         <AlertDescription>
-          Changes to AI settings may affect the system's performance and response quality. Test thoroughly before
-          deploying to production.
+          Alterações nas configurações da IA podem afetar o desempenho e a qualidade das respostas. Teste
+          cuidadosamente antes de aplicar em produção.
         </AlertDescription>
       </Alert>
 
       <Tabs defaultValue="general" className="space-y-4">
         <TabsList>
-          <TabsTrigger value="general">General</TabsTrigger>
-          <TabsTrigger value="model">Model Settings</TabsTrigger>
-          <TabsTrigger value="training">Training</TabsTrigger>
-          <TabsTrigger value="prompts">System Prompts</TabsTrigger>
+          <TabsTrigger value="general">Geral</TabsTrigger>
+          <TabsTrigger value="model">Modelo</TabsTrigger>
+          <TabsTrigger value="training">Treinamento</TabsTrigger>
+          <TabsTrigger value="prompts">Prompts</TabsTrigger>
         </TabsList>
 
         <TabsContent value="general" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>General Settings</CardTitle>
-              <CardDescription>Configure the general behavior of the AI Q&A system</CardDescription>
+              <CardTitle>Configurações Gerais</CardTitle>
+              <CardDescription>Configure o comportamento geral do sistema de IA</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between space-x-2">
                 <div className="space-y-0.5">
-                  <Label htmlFor="feedback-collection">Feedback Collection</Label>
-                  <p className="text-sm text-muted-foreground">Allow users to provide feedback on AI responses</p>
+                  <Label htmlFor="feedback-collection">Coleta de Feedback</Label>
+                  <p className="text-sm text-muted-foreground">Permitir que usuários enviem feedback sobre as respostas da IA</p>
                 </div>
                 <Switch id="feedback-collection" checked={feedbackCollection} onCheckedChange={setFeedbackCollection} />
               </div>
 
               <div className="flex items-center justify-between space-x-2">
                 <div className="space-y-0.5">
-                  <Label htmlFor="auto-train">Automatic Training</Label>
-                  <p className="text-sm text-muted-foreground">Automatically train the model on new notices</p>
+                  <Label htmlFor="auto-train">Treinamento Automático</Label>
+                  <p className="text-sm text-muted-foreground">Treinar automaticamente o modelo com novos avisos</p>
                 </div>
                 <Switch id="auto-train" checked={autoTrain} onCheckedChange={setAutoTrain} />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="model-selection">AI Model</Label>
+                <Label htmlFor="model-selection">Modelo de IA</Label>
                 <Select defaultValue="gpt-4o">
                   <SelectTrigger id="model-selection">
-                    <SelectValue placeholder="Select model" />
+                    <SelectValue placeholder="Selecione o modelo" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="gpt-4o">GPT-4o</SelectItem>
@@ -90,15 +87,15 @@ export default function AISettingsPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="api-key">API Key</Label>
+                <Label htmlFor="api-key">Chave da API</Label>
                 <Input id="api-key" type="password" value="••••••••••••••••••••••" />
-                <p className="text-xs text-muted-foreground">Your API key is encrypted and securely stored</p>
+                <p className="text-xs text-muted-foreground">Sua chave está criptografada e armazenada com segurança</p>
               </div>
             </CardContent>
             <CardFooter>
               <Button onClick={handleSave} disabled={isSaving}>
                 <Save className="mr-2 h-4 w-4" />
-                {isSaving ? "Saving..." : "Save Settings"}
+                {isSaving ? "Salvando..." : "Salvar Configurações"}
               </Button>
             </CardFooter>
           </Card>
@@ -107,13 +104,13 @@ export default function AISettingsPage() {
         <TabsContent value="model" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>Model Parameters</CardTitle>
-              <CardDescription>Fine-tune the AI model parameters for optimal performance</CardDescription>
+              <CardTitle>Parâmetros do Modelo</CardTitle>
+              <CardDescription>Ajuste fino dos parâmetros da IA para melhor desempenho</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <Label htmlFor="temperature">Temperature: {temperature[0].toFixed(1)}</Label>
+                  <Label htmlFor="temperature">Temperatura: {temperature[0].toFixed(1)}</Label>
                 </div>
                 <Slider
                   id="temperature"
@@ -124,13 +121,13 @@ export default function AISettingsPage() {
                   onValueChange={setTemperature}
                 />
                 <p className="text-xs text-muted-foreground">
-                  Controls randomness: Lower values are more deterministic, higher values more creative
+                  Controla a aleatoriedade: valores baixos geram respostas mais determinísticas, valores altos mais criativas
                 </p>
               </div>
 
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <Label htmlFor="max-tokens">Max Tokens: {maxTokens[0]}</Label>
+                  <Label htmlFor="max-tokens">Máximo de Tokens: {maxTokens[0]}</Label>
                 </div>
                 <Slider
                   id="max-tokens"
@@ -140,29 +137,29 @@ export default function AISettingsPage() {
                   value={maxTokens}
                   onValueChange={setMaxTokens}
                 />
-                <p className="text-xs text-muted-foreground">Maximum length of the generated response</p>
+                <p className="text-xs text-muted-foreground">Comprimento máximo da resposta gerada</p>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="context-window">Context Window</Label>
+                <Label htmlFor="context-window">Janela de Contexto</Label>
                 <Select defaultValue="8192">
                   <SelectTrigger id="context-window">
-                    <SelectValue placeholder="Select context window" />
+                    <SelectValue placeholder="Selecione a janela de contexto" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="4096">4,096 tokens</SelectItem>
-                    <SelectItem value="8192">8,192 tokens</SelectItem>
-                    <SelectItem value="16384">16,384 tokens</SelectItem>
-                    <SelectItem value="32768">32,768 tokens</SelectItem>
+                    <SelectItem value="4096">4.096 tokens</SelectItem>
+                    <SelectItem value="8192">8.192 tokens</SelectItem>
+                    <SelectItem value="16384">16.384 tokens</SelectItem>
+                    <SelectItem value="32768">32.768 tokens</SelectItem>
                   </SelectContent>
                 </Select>
-                <p className="text-xs text-muted-foreground">Maximum context size for each query</p>
+                <p className="text-xs text-muted-foreground">Tamanho máximo de contexto para cada consulta</p>
               </div>
             </CardContent>
             <CardFooter>
               <Button onClick={handleSave} disabled={isSaving}>
                 <Save className="mr-2 h-4 w-4" />
-                {isSaving ? "Saving..." : "Save Settings"}
+                {isSaving ? "Salvando..." : "Salvar Configurações"}
               </Button>
             </CardFooter>
           </Card>
@@ -171,53 +168,53 @@ export default function AISettingsPage() {
         <TabsContent value="training" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>Training Configuration</CardTitle>
-              <CardDescription>Configure how the AI system learns from new data</CardDescription>
+              <CardTitle>Configuração de Treinamento</CardTitle>
+              <CardDescription>Configure como a IA aprende com novos dados</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="training-frequency">Training Frequency</Label>
+                <Label htmlFor="training-frequency">Frequência de Treinamento</Label>
                 <Select defaultValue="daily">
                   <SelectTrigger id="training-frequency">
-                    <SelectValue placeholder="Select frequency" />
+                    <SelectValue placeholder="Selecione a frequência" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="realtime">Real-time</SelectItem>
-                    <SelectItem value="hourly">Hourly</SelectItem>
-                    <SelectItem value="daily">Daily</SelectItem>
-                    <SelectItem value="weekly">Weekly</SelectItem>
-                    <SelectItem value="manual">Manual Only</SelectItem>
+                    <SelectItem value="realtime">Em tempo real</SelectItem>
+                    <SelectItem value="hourly">De hora em hora</SelectItem>
+                    <SelectItem value="daily">Diariamente</SelectItem>
+                    <SelectItem value="weekly">Semanalmente</SelectItem>
+                    <SelectItem value="manual">Apenas manual</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="data-sources">Data Sources</Label>
+                <Label>Fontes de Dados</Label>
                 <div className="flex items-center space-x-2">
                   <Switch id="source-notices" defaultChecked />
-                  <Label htmlFor="source-notices">Academic Notices</Label>
+                  <Label htmlFor="source-notices">Avisos Acadêmicos</Label>
                 </div>
                 <div className="flex items-center space-x-2">
                   <Switch id="source-qa" defaultChecked />
-                  <Label htmlFor="source-qa">Previous Q&A Pairs</Label>
+                  <Label htmlFor="source-qa">Perguntas e Respostas Anteriores</Label>
                 </div>
                 <div className="flex items-center space-x-2">
                   <Switch id="source-feedback" defaultChecked />
-                  <Label htmlFor="source-feedback">User Feedback</Label>
+                  <Label htmlFor="source-feedback">Feedback de Usuários</Label>
                 </div>
               </div>
 
               <div className="space-y-2">
                 <Button variant="outline" className="w-full">
                   <Bot className="mr-2 h-4 w-4" />
-                  Start Manual Training
+                  Iniciar Treinamento Manual
                 </Button>
               </div>
             </CardContent>
             <CardFooter>
               <Button onClick={handleSave} disabled={isSaving}>
                 <Save className="mr-2 h-4 w-4" />
-                {isSaving ? "Saving..." : "Save Settings"}
+                {isSaving ? "Salvando..." : "Salvar Configurações"}
               </Button>
             </CardFooter>
           </Card>
@@ -226,44 +223,44 @@ export default function AISettingsPage() {
         <TabsContent value="prompts" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>System Prompts</CardTitle>
-              <CardDescription>Configure the system prompts that guide the AI's behavior</CardDescription>
+              <CardTitle>Prompts do Sistema</CardTitle>
+              <CardDescription>Configure os prompts que guiam o comportamento da IA</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="system-prompt">Main System Prompt</Label>
+                <Label htmlFor="system-prompt">Prompt Principal</Label>
                 <Textarea
                   id="system-prompt"
                   rows={6}
-                  defaultValue="You are an AI assistant for a university's academic notice system. Your purpose is to help students find information about academic notices, deadlines, events, and policies. Always be helpful, accurate, and concise. If you don't know the answer, say so clearly and suggest where the student might find the information."
+                  defaultValue="Você é um assistente de IA para o sistema de avisos acadêmicos de uma universidade. Seu objetivo é ajudar os estudantes a encontrarem informações sobre avisos, prazos, eventos e políticas acadêmicas. Sempre seja útil, preciso e conciso. Se não souber a resposta, diga claramente e sugira onde o estudante pode encontrar a informação."
                 />
-                <p className="text-xs text-muted-foreground">This prompt defines the AI's role and behavior</p>
+                <p className="text-xs text-muted-foreground">Esse prompt define o papel e o comportamento da IA</p>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="fallback-prompt">Fallback Response</Label>
+                <Label htmlFor="fallback-prompt">Resposta Alternativa</Label>
                 <Textarea
                   id="fallback-prompt"
                   rows={3}
-                  defaultValue="I don't have enough information to answer that question accurately. You might want to check the university's official website or contact the relevant department directly for the most up-to-date information."
+                  defaultValue="Não tenho informações suficientes para responder com precisão. Você pode verificar o site oficial da universidade ou entrar em contato com o setor responsável para obter informações atualizadas."
                 />
-                <p className="text-xs text-muted-foreground">Response when the AI cannot answer a question</p>
+                <p className="text-xs text-muted-foreground">Resposta quando a IA não consegue responder a uma pergunta</p>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="greeting-prompt">Greeting Message</Label>
+                <Label htmlFor="greeting-prompt">Mensagem de Boas-vindas</Label>
                 <Textarea
                   id="greeting-prompt"
                   rows={2}
-                  defaultValue="Hello! I'm your university's academic notice assistant. How can I help you today?"
+                  defaultValue="Olá! Sou o assistente de avisos acadêmicos da sua universidade. Como posso te ajudar hoje?"
                 />
-                <p className="text-xs text-muted-foreground">Initial greeting shown to users</p>
+                <p className="text-xs text-muted-foreground">Mensagem inicial exibida aos usuários</p>
               </div>
             </CardContent>
             <CardFooter>
               <Button onClick={handleSave} disabled={isSaving}>
                 <Save className="mr-2 h-4 w-4" />
-                {isSaving ? "Saving..." : "Save Settings"}
+                {isSaving ? "Salvando..." : "Salvar Configurações"}
               </Button>
             </CardFooter>
           </Card>
@@ -272,3 +269,4 @@ export default function AISettingsPage() {
     </div>
   )
 }
+

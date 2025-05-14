@@ -14,28 +14,28 @@ export function AdminSidebar({ open, setOpen }: AdminSidebarProps) {
 
   const routes = [
     {
-      label: "Dashboard",
+      label: "Início",
       icon: Home,
       href: "/dashboard",
       active: pathname === "/dashboard",
     },
     {
-      label: "Notices",
+      label: "Editais",
       icon: FileText,
-      href: "/dashboard/notices",
-      active: pathname === "/dashboard/notices",
+      href: "/dashboard/editais",
+      active: pathname === "/dashboard/editais",
     },
     {
-      label: "AI Settings",
+      label: "Configurações da IA",
       icon: Bot,
-      href: "/dashboard/ai-settings",
-      active: pathname === "/dashboard/ai-settings",
+      href: "/dashboard/configuracoes-ia",
+      active: pathname === "/dashboard/configuracoes-ia",
     },
     {
-      label: "Settings",
+      label: "Configurações",
       icon: Settings,
-      href: "/dashboard/settings",
-      active: pathname === "/dashboard/settings",
+      href: "/dashboard/configuracoes",
+      active: pathname === "/dashboard/configuracoes",
     },
   ]
 
@@ -45,15 +45,8 @@ export function AdminSidebar({ open, setOpen }: AdminSidebarProps) {
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetContent side="left" className="p-0">
           <div className="flex h-full w-full flex-col border-r bg-background">
-            <div className="flex h-14 items-center border-b px-4">
-              <div className="flex items-center gap-2 font-semibold">
-                <Bot className="h-6 w-6" />
-                <span>Academic Q&A Admin</span>
-              </div>
-              <Button variant="ghost" size="icon" className="ml-auto" onClick={() => setOpen(false)}>
-                <X className="h-5 w-5" />
-                <span className="sr-only">Close</span>
-              </Button>
+            <div className="flex h-14 items-center border-b px-4 justify-center w-full">
+                <img className="max-w-52" src="/public/logo/logo.png" alt="Logo do DOCFLOW" />
             </div>
             <div className="flex-1 overflow-auto py-2">
               <nav className="grid gap-1 px-2">
@@ -85,11 +78,10 @@ export function AdminSidebar({ open, setOpen }: AdminSidebarProps) {
       </Sheet>
 
       {/* Desktop Sidebar */}
-      <div className="hidden h-full w-64 flex-col border-r bg-background md:flex">
+      <div className="hidden h-screen w-64 flex-col border-r bg-background md:flex">
         <div className="flex h-14 items-center border-b px-4">
-          <div className="flex items-center gap-2 font-semibold">
-            <Bot className="h-6 w-6" />
-            <span>Academic Q&A Admin</span>
+          <div className="flex items-center justify-center w-full gap-2 font-semibold">
+            <img className="w-44" src="/public/logo/logo.png" alt="Logo do DOCFLOW" />
           </div>
         </div>
         <div className="flex-1 overflow-auto py-2">
@@ -112,7 +104,7 @@ export function AdminSidebar({ open, setOpen }: AdminSidebarProps) {
           <Button variant="outline" className="w-full justify-start" asChild>
             <Link to="/login">
               <LogOut className="mr-2 h-4 w-4" />
-              Logout
+              Sair
             </Link>
           </Button>
         </div>

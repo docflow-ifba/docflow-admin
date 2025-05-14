@@ -5,37 +5,37 @@ export function RecentNoticesTable() {
   const recentNotices = [
     {
       id: "1",
-      title: "Fall Semester Registration Deadline",
-      category: "Registration",
-      status: "Active",
+      title: "Prazo de Inscrição para o Semestre de Outono",
+      category: "Inscrições",
+      status: "Ativo",
       date: "2025-08-15",
     },
     {
       id: "2",
-      title: "Library Hours Extended During Finals Week",
-      category: "Facilities",
-      status: "Active",
+      title: "Horário da Biblioteca Estendido Durante a Semana de Provas",
+      category: "Infraestrutura",
+      status: "Ativo",
       date: "2025-05-10",
     },
     {
       id: "3",
-      title: "Scholarship Application Period Open",
-      category: "Financial",
-      status: "Active",
+      title: "Período de Inscrição para Bolsas Aberto",
+      category: "Financeiro",
+      status: "Ativo",
       date: "2025-03-01",
     },
     {
       id: "4",
-      title: "Campus Closure Due to Weather",
-      category: "Emergency",
-      status: "Inactive",
+      title: "Campus Fechado Devido ao Clima",
+      category: "Emergência",
+      status: "Inativo",
       date: "2025-01-15",
     },
     {
       id: "5",
-      title: "New Course Offerings for Spring Semester",
-      category: "Academic",
-      status: "Active",
+      title: "Novas Disciplinas Ofertadas para o Semestre de Primavera",
+      category: "Acadêmico",
+      status: "Ativo",
       date: "2025-02-20",
     },
   ]
@@ -44,10 +44,10 @@ export function RecentNoticesTable() {
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead>Title</TableHead>
-          <TableHead>Category</TableHead>
+          <TableHead>Título</TableHead>
+          <TableHead>Categoria</TableHead>
           <TableHead>Status</TableHead>
-          <TableHead>Date</TableHead>
+          <TableHead>Data</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -56,7 +56,7 @@ export function RecentNoticesTable() {
             <TableCell className="font-medium">{notice.title}</TableCell>
             <TableCell>{notice.category}</TableCell>
             <TableCell>
-              <Badge variant={notice.status === "Active" ? "default" : "secondary"}>{notice.status}</Badge>
+              <Badge variant={notice.status === "Ativo" ? "default" : "secondary"}>{notice.status}</Badge>
             </TableCell>
             <TableCell>{notice.date}</TableCell>
           </TableRow>

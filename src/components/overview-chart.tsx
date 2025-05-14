@@ -66,7 +66,7 @@ export function OverviewChart() {
 
     // Draw line chart
     ctx.beginPath()
-    ctx.strokeStyle = "#3b82f6" // Tailwind blue-500
+    ctx.strokeStyle = "#5A2CA0" // Tailwind blue-500
     ctx.lineWidth = 2
 
     // Start at the first data point
@@ -82,8 +82,8 @@ export function OverviewChart() {
 
     // Add gradient fill under the line
     const gradient = ctx.createLinearGradient(0, padding, 0, height - padding)
-    gradient.addColorStop(0, "rgba(59, 130, 246, 0.2)") // Tailwind blue-500 with opacity
-    gradient.addColorStop(1, "rgba(59, 130, 246, 0)")
+    gradient.addColorStop(0, "rgba(90, 44, 160, 0.2)") // Tailwind blue-500 with opacity
+    gradient.addColorStop(1, "rgba(90, 44, 160, 0)")
 
     ctx.fillStyle = gradient
     ctx.beginPath()
@@ -103,7 +103,7 @@ export function OverviewChart() {
 
     // Draw data points
     ctx.fillStyle = "#ffffff" // White
-    ctx.strokeStyle = "#3b82f6" // Tailwind blue-500
+    ctx.strokeStyle = "#5A2CA0" // Tailwind blue-500
     ctx.lineWidth = 2
 
     for (let i = 0; i < data.length; i++) {

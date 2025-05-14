@@ -1,5 +1,3 @@
-"use client"
-
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -19,61 +17,60 @@ import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
 import { Edit, Plus, Search, Trash2 } from "lucide-react"
 
-// Sample data
 const initialNotices = [
   {
     id: "1",
-    title: "Fall Semester Registration Deadline",
-    category: "Registration",
-    status: "Active",
+    title: "Prazo de Matrícula para o Semestre de Outono",
+    category: "Matrícula",
+    status: "Ativo",
     date: "2025-08-15",
     views: 1245,
   },
   {
     id: "2",
-    title: "Library Hours Extended During Finals Week",
-    category: "Facilities",
-    status: "Active",
+    title: "Horário da Biblioteca Estendido Durante a Semana de Provas Finais",
+    category: "Instalações",
+    status: "Ativo",
     date: "2025-05-10",
     views: 876,
   },
   {
     id: "3",
-    title: "Scholarship Application Period Open",
-    category: "Financial",
-    status: "Active",
+    title: "Período de Inscrição para Bolsas de Estudo Aberto",
+    category: "Financeiro",
+    status: "Ativo",
     date: "2025-03-01",
     views: 2134,
   },
   {
     id: "4",
-    title: "Campus Closure Due to Weather",
-    category: "Emergency",
-    status: "Inactive",
+    title: "Fechamento do Campus Devido ao Clima",
+    category: "Emergência",
+    status: "Inativo",
     date: "2025-01-15",
     views: 3421,
   },
   {
     id: "5",
-    title: "New Course Offerings for Spring Semester",
-    category: "Academic",
-    status: "Active",
+    title: "Novas Ofertas de Cursos para o Semestre da Primavera",
+    category: "Acadêmico",
+    status: "Ativo",
     date: "2025-02-20",
     views: 987,
   },
   {
     id: "6",
-    title: "Student Government Elections",
-    category: "Events",
-    status: "Active",
+    title: "Eleições do Grêmio Estudantil",
+    category: "Eventos",
+    status: "Ativo",
     date: "2025-04-05",
     views: 654,
   },
   {
     id: "7",
-    title: "Career Fair Registration Open",
-    category: "Career",
-    status: "Active",
+    title: "Inscrições Abertas para Feira de Carreiras",
+    category: "Carreira",
+    status: "Ativo",
     date: "2025-03-15",
     views: 1432,
   },
@@ -90,11 +87,10 @@ export default function NoticesPage() {
   const [currentNotice, setCurrentNotice] = useState<any>(null)
   const [newNotice, setNewNotice] = useState({
     title: "",
-    category: "Academic",
+    category: "Acadêmico",
     content: "",
   })
 
-  // Filter notices based on search term and filters
   const filteredNotices = notices.filter((notice) => {
     const matchesSearch = notice.title.toLowerCase().includes(searchTerm.toLowerCase())
     const matchesStatus = statusFilter === "all" || notice.status === statusFilter
@@ -108,12 +104,12 @@ export default function NoticesPage() {
       id,
       title: newNotice.title,
       category: newNotice.category,
-      status: "Active",
+      status: "Ativo",
       date: new Date().toISOString().split("T")[0],
       views: 0,
     }
     setNotices([...notices, newNoticeItem])
-    setNewNotice({ title: "", category: "Academic", content: "" })
+    setNewNotice({ title: "", category: "Acadêmico", content: "" })
     setIsAddDialogOpen(false)
   }
 
@@ -142,65 +138,65 @@ export default function NoticesPage() {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold tracking-tight">Notice Management</h2>
+        <h2 className="text-2xl font-bold tracking-tight">Gerenciamento de Editais</h2>
         <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
           <DialogTrigger asChild>
             <Button>
               <Plus className="mr-2 h-4 w-4" />
-              Add Notice
+              Adicionar Edital
             </Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Add New Notice</DialogTitle>
-              <DialogDescription>Create a new academic notice to be added to the Q&A system.</DialogDescription>
+              <DialogTitle>Adicionar Novo Edital</DialogTitle>
+              <DialogDescription>Crie um novo edital para ser adicionado ao sistema.</DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">
               <div className="grid gap-2">
-                <Label htmlFor="title">Title</Label>
+                <Label htmlFor="title">Título</Label>
                 <Input
                   id="title"
                   value={newNotice.title}
                   onChange={(e) => setNewNotice({ ...newNotice, title: e.target.value })}
-                  placeholder="Enter notice title"
+                  placeholder="Digite o título do aviso"
                 />
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="category">Category</Label>
+                <Label htmlFor="category">Categoria</Label>
                 <Select
                   value={newNotice.category}
                   onValueChange={(value) => setNewNotice({ ...newNotice, category: value })}
                 >
                   <SelectTrigger id="category">
-                    <SelectValue placeholder="Select category" />
+                    <SelectValue placeholder="Selecione uma categoria" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Academic">Academic</SelectItem>
-                    <SelectItem value="Registration">Registration</SelectItem>
-                    <SelectItem value="Financial">Financial</SelectItem>
-                    <SelectItem value="Events">Events</SelectItem>
-                    <SelectItem value="Facilities">Facilities</SelectItem>
-                    <SelectItem value="Emergency">Emergency</SelectItem>
-                    <SelectItem value="Career">Career</SelectItem>
+                    <SelectItem value="Acadêmico">Acadêmico</SelectItem>
+                    <SelectItem value="Matrícula">Matrícula</SelectItem>
+                    <SelectItem value="Financeiro">Financeiro</SelectItem>
+                    <SelectItem value="Eventos">Eventos</SelectItem>
+                    <SelectItem value="Instalações">Instalações</SelectItem>
+                    <SelectItem value="Emergência">Emergência</SelectItem>
+                    <SelectItem value="Carreira">Carreira</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="content">Content</Label>
+                <Label htmlFor="content">Conteúdo</Label>
                 <Textarea
                   id="content"
                   value={newNotice.content}
                   onChange={(e) => setNewNotice({ ...newNotice, content: e.target.value })}
-                  placeholder="Enter notice content"
+                  placeholder="Digite o conteúdo do aviso"
                   rows={5}
                 />
               </div>
             </div>
             <DialogFooter>
               <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>
-                Cancel
+                Cancelar
               </Button>
-              <Button onClick={handleAddNotice}>Add Notice</Button>
+              <Button onClick={handleAddNotice}>Adicionar Aviso</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
@@ -210,7 +206,7 @@ export default function NoticesPage() {
         <div className="relative flex-1">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Search notices..."
+            placeholder="Buscar avisos..."
             className="pl-8"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -222,24 +218,24 @@ export default function NoticesPage() {
               <SelectValue placeholder="Status" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Status</SelectItem>
-              <SelectItem value="Active">Active</SelectItem>
-              <SelectItem value="Inactive">Inactive</SelectItem>
+              <SelectItem value="all">Todos</SelectItem>
+              <SelectItem value="Ativo">Ativo</SelectItem>
+              <SelectItem value="Inativo">Inativo</SelectItem>
             </SelectContent>
           </Select>
           <Select value={categoryFilter} onValueChange={setCategoryFilter}>
             <SelectTrigger className="w-[130px]">
-              <SelectValue placeholder="Category" />
+              <SelectValue placeholder="Categoria" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Categories</SelectItem>
-              <SelectItem value="Academic">Academic</SelectItem>
-              <SelectItem value="Registration">Registration</SelectItem>
-              <SelectItem value="Financial">Financial</SelectItem>
-              <SelectItem value="Events">Events</SelectItem>
-              <SelectItem value="Facilities">Facilities</SelectItem>
-              <SelectItem value="Emergency">Emergency</SelectItem>
-              <SelectItem value="Career">Career</SelectItem>
+              <SelectItem value="all">Todas</SelectItem>
+              <SelectItem value="Acadêmico">Acadêmico</SelectItem>
+              <SelectItem value="Matrícula">Matrícula</SelectItem>
+              <SelectItem value="Financeiro">Financeiro</SelectItem>
+              <SelectItem value="Eventos">Eventos</SelectItem>
+              <SelectItem value="Instalações">Instalações</SelectItem>
+              <SelectItem value="Emergência">Emergência</SelectItem>
+              <SelectItem value="Carreira">Carreira</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -249,19 +245,19 @@ export default function NoticesPage() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Title</TableHead>
-              <TableHead>Category</TableHead>
+              <TableHead>Título</TableHead>
+              <TableHead>Categoria</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead>Date</TableHead>
-              <TableHead>Views</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+              <TableHead>Data</TableHead>
+              <TableHead>Visualizações</TableHead>
+              <TableHead className="text-right">Ações</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {filteredNotices.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={6} className="h-24 text-center">
-                  No notices found.
+                  Nenhum aviso encontrado.
                 </TableCell>
               </TableRow>
             ) : (
@@ -270,7 +266,7 @@ export default function NoticesPage() {
                   <TableCell className="font-medium">{notice.title}</TableCell>
                   <TableCell>{notice.category}</TableCell>
                   <TableCell>
-                    <Badge variant={notice.status === "Active" ? "default" : "secondary"}>{notice.status}</Badge>
+                    <Badge variant={notice.status === "Ativo" ? "default" : "secondary"}>{notice.status}</Badge>
                   </TableCell>
                   <TableCell>{notice.date}</TableCell>
                   <TableCell>{notice.views.toLocaleString()}</TableCell>
@@ -290,13 +286,13 @@ export default function NoticesPage() {
                         </DialogTrigger>
                         <DialogContent>
                           <DialogHeader>
-                            <DialogTitle>Edit Notice</DialogTitle>
-                            <DialogDescription>Make changes to the notice details.</DialogDescription>
+                            <DialogTitle>Editar Aviso</DialogTitle>
+                            <DialogDescription>Faça alterações nos detalhes do aviso.</DialogDescription>
                           </DialogHeader>
                           {currentNotice && (
                             <div className="grid gap-4 py-4">
                               <div className="grid gap-2">
-                                <Label htmlFor="edit-title">Title</Label>
+                                <Label htmlFor="edit-title">Título</Label>
                                 <Input
                                   id="edit-title"
                                   value={currentNotice.title}
@@ -309,7 +305,7 @@ export default function NoticesPage() {
                                 />
                               </div>
                               <div className="grid gap-2">
-                                <Label htmlFor="edit-category">Category</Label>
+                                <Label htmlFor="edit-category">Categoria</Label>
                                 <Select
                                   value={currentNotice.category}
                                   onValueChange={(value) =>
@@ -323,13 +319,13 @@ export default function NoticesPage() {
                                     <SelectValue />
                                   </SelectTrigger>
                                   <SelectContent>
-                                    <SelectItem value="Academic">Academic</SelectItem>
-                                    <SelectItem value="Registration">Registration</SelectItem>
-                                    <SelectItem value="Financial">Financial</SelectItem>
-                                    <SelectItem value="Events">Events</SelectItem>
-                                    <SelectItem value="Facilities">Facilities</SelectItem>
-                                    <SelectItem value="Emergency">Emergency</SelectItem>
-                                    <SelectItem value="Career">Career</SelectItem>
+                                    <SelectItem value="Acadêmico">Acadêmico</SelectItem>
+                                    <SelectItem value="Matrícula">Matrícula</SelectItem>
+                                    <SelectItem value="Financeiro">Financeiro</SelectItem>
+                                    <SelectItem value="Eventos">Eventos</SelectItem>
+                                    <SelectItem value="Instalações">Instalações</SelectItem>
+                                    <SelectItem value="Emergência">Emergência</SelectItem>
+                                    <SelectItem value="Carreira">Carreira</SelectItem>
                                   </SelectContent>
                                 </Select>
                               </div>
@@ -348,8 +344,8 @@ export default function NoticesPage() {
                                     <SelectValue />
                                   </SelectTrigger>
                                   <SelectContent>
-                                    <SelectItem value="Active">Active</SelectItem>
-                                    <SelectItem value="Inactive">Inactive</SelectItem>
+                                    <SelectItem value="Ativo">Ativo</SelectItem>
+                                    <SelectItem value="Inativo">Inativo</SelectItem>
                                   </SelectContent>
                                 </Select>
                               </div>
@@ -357,9 +353,9 @@ export default function NoticesPage() {
                           )}
                           <DialogFooter>
                             <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>
-                              Cancel
+                              Cancelar
                             </Button>
-                            <Button onClick={handleEditNotice}>Save Changes</Button>
+                            <Button onClick={handleEditNotice}>Salvar Alterações</Button>
                           </DialogFooter>
                         </DialogContent>
                       </Dialog>
@@ -378,23 +374,23 @@ export default function NoticesPage() {
                         </DialogTrigger>
                         <DialogContent>
                           <DialogHeader>
-                            <DialogTitle>Delete Notice</DialogTitle>
+                            <DialogTitle>Excluir Aviso</DialogTitle>
                             <DialogDescription>
-                              Are you sure you want to delete this notice? This action cannot be undone.
+                              Tem certeza que deseja excluir este aviso? Esta ação não pode ser desfeita.
                             </DialogDescription>
                           </DialogHeader>
                           {currentNotice && (
                             <div className="py-4">
                               <p className="font-medium">{currentNotice.title}</p>
-                              <p className="text-sm text-muted-foreground">Category: {currentNotice.category}</p>
+                              <p className="text-sm text-muted-foreground">Categoria: {currentNotice.category}</p>
                             </div>
                           )}
                           <DialogFooter>
                             <Button variant="outline" onClick={() => setIsDeleteDialogOpen(false)}>
-                              Cancel
+                              Cancelar
                             </Button>
                             <Button variant="destructive" onClick={handleDeleteNotice}>
-                              Delete
+                              Excluir
                             </Button>
                           </DialogFooter>
                         </DialogContent>
