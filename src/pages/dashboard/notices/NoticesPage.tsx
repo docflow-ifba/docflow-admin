@@ -1,139 +1,79 @@
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Badge } from "@/components/ui/badge"
-import { Edit, Plus, Search, Trash2 } from "lucide-react"
-
-const initialNotices = [
-  {
-    id: "1",
-    title: "Prazo de Matrícula para o Semestre de Outono",
-    category: "Matrícula",
-    status: "Ativo",
-    date: "2025-08-15",
-    views: 1245,
-  },
-  {
-    id: "2",
-    title: "Horário da Biblioteca Estendido Durante a Semana de Provas Finais",
-    category: "Instalações",
-    status: "Ativo",
-    date: "2025-05-10",
-    views: 876,
-  },
-  {
-    id: "3",
-    title: "Período de Inscrição para Bolsas de Estudo Aberto",
-    category: "Financeiro",
-    status: "Ativo",
-    date: "2025-03-01",
-    views: 2134,
-  },
-  {
-    id: "4",
-    title: "Fechamento do Campus Devido ao Clima",
-    category: "Emergência",
-    status: "Inativo",
-    date: "2025-01-15",
-    views: 3421,
-  },
-  {
-    id: "5",
-    title: "Novas Ofertas de Cursos para o Semestre da Primavera",
-    category: "Acadêmico",
-    status: "Ativo",
-    date: "2025-02-20",
-    views: 987,
-  },
-  {
-    id: "6",
-    title: "Eleições do Grêmio Estudantil",
-    category: "Eventos",
-    status: "Ativo",
-    date: "2025-04-05",
-    views: 654,
-  },
-  {
-    id: "7",
-    title: "Inscrições Abertas para Feira de Carreiras",
-    category: "Carreira",
-    status: "Ativo",
-    date: "2025-03-15",
-    views: 1432,
-  },
-]
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Edit, Plus, Search, Trash2 } from "lucide-react";
+import { findNotices, createNotice, deleteNotice } from "@/services/notice.service";
+import { CreateNoticeDTO } from "@/dtos/create-notice.dto";
+import { NoticeResponseDTO } from "@/dtos/notice-response.dto";
+import OrganizationsAutocomplete from "@/components/organizations-autocomplete";
 
 export default function NoticesPage() {
-  const [notices, setNotices] = useState(initialNotices)
-  const [searchTerm, setSearchTerm] = useState("")
-  const [statusFilter, setStatusFilter] = useState("all")
-  const [categoryFilter, setCategoryFilter] = useState("all")
-  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
-  const [currentNotice, setCurrentNotice] = useState<any>(null)
-  const [newNotice, setNewNotice] = useState({
+  const [notices, setNotices] = useState<NoticeResponseDTO[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [organizationFilter, setOrganizationFilter] = useState("all");
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [newNotice, setNewNotice] = useState<CreateNoticeDTO>({
     title: "",
-    category: "Acadêmico",
-    content: "",
-  })
+    deadline: "",
+    pdfBase64: "",
+    organization_id: "",
+  });
 
-  const filteredNotices = notices.filter((notice) => {
-    const matchesSearch = notice.title.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesStatus = statusFilter === "all" || notice.status === statusFilter
-    const matchesCategory = categoryFilter === "all" || notice.category === categoryFilter
-    return matchesSearch && matchesStatus && matchesCategory
-  })
+  useEffect(() => {
+    const fetchNotices = async () => {
+      try {
+        const noticesData = await findNotices(statusFilter, searchTerm, organizationFilter);
+        setNotices(noticesData);
+      } catch (error) {
+        console.error("Erro ao buscar editais:", error);
+      }
+    };
 
-  const handleAddNotice = () => {
-    const id = (notices.length + 1).toString()
-    const newNoticeItem = {
-      id,
-      title: newNotice.title,
-      category: newNotice.category,
-      status: "Ativo",
-      date: new Date().toISOString().split("T")[0],
-      views: 0,
+    fetchNotices();
+  }, [statusFilter, searchTerm, organizationFilter]);
+
+  const handleAddNotice = async () => {
+    try {
+      await createNotice(newNotice);
+      setIsAddDialogOpen(false);
+      const updated = await findNotices(statusFilter, searchTerm, organizationFilter);
+      setNotices(updated);
+    } catch (err) {
+      console.error("Erro ao adicionar aviso:", err);
     }
-    setNotices([...notices, newNoticeItem])
-    setNewNotice({ title: "", category: "Acadêmico", content: "" })
-    setIsAddDialogOpen(false)
-  }
+  };
 
-  const handleEditNotice = () => {
-    if (!currentNotice) return
+  const handleEditNotice = async (noticeId: string) => {
+    console.log(noticeId)
+  };
 
-    const updatedNotices = notices.map((notice) =>
-      notice.id === currentNotice.id
-        ? { ...notice, title: currentNotice.title, category: currentNotice.category }
-        : notice,
-    )
+  const handleDeleteNotice = async (noticeId: string) => {
+    try {
+      await deleteNotice(noticeId);
+      const updated = await findNotices(statusFilter, searchTerm, organizationFilter);
+      setNotices(updated);
+    } catch (err) {
+      console.error("Erro ao excluir aviso:", err);
+    }
+  };
 
-    setNotices(updatedNotices)
-    setIsEditDialogOpen(false)
-  }
-
-  const handleDeleteNotice = () => {
-    if (!currentNotice) return
-
-    const updatedNotices = notices.filter((notice) => notice.id !== currentNotice.id)
-
-    setNotices(updatedNotices)
-    setIsDeleteDialogOpen(false)
-  }
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setNewNotice((prev) => ({
+        ...prev,
+        pdfBase64: reader.result as string,
+      }));
+    };
+    reader.readAsDataURL(file);
+  };
 
   return (
     <div className="flex flex-col gap-4">
@@ -162,33 +102,30 @@ export default function NoticesPage() {
                 />
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="category">Categoria</Label>
-                <Select
-                  value={newNotice.category}
-                  onValueChange={(value) => setNewNotice({ ...newNotice, category: value })}
-                >
-                  <SelectTrigger id="category">
-                    <SelectValue placeholder="Selecione uma categoria" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Acadêmico">Acadêmico</SelectItem>
-                    <SelectItem value="Matrícula">Matrícula</SelectItem>
-                    <SelectItem value="Financeiro">Financeiro</SelectItem>
-                    <SelectItem value="Eventos">Eventos</SelectItem>
-                    <SelectItem value="Instalações">Instalações</SelectItem>
-                    <SelectItem value="Emergência">Emergência</SelectItem>
-                    <SelectItem value="Carreira">Carreira</SelectItem>
-                  </SelectContent>
-                </Select>
+                <Label htmlFor="deadline">Data Final</Label>
+                <Input
+                  id="deadline"
+                  type="date"
+                  value={newNotice.deadline}
+                  onChange={(e) => setNewNotice({ ...newNotice, deadline: e.target.value })}
+                />
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="content">Conteúdo</Label>
-                <Textarea
-                  id="content"
-                  value={newNotice.content}
-                  onChange={(e) => setNewNotice({ ...newNotice, content: e.target.value })}
-                  placeholder="Digite o conteúdo do aviso"
-                  rows={5}
+                <Label htmlFor="organization_id">Instituição</Label>
+                <OrganizationsAutocomplete
+                  id="organization_id"
+                  value={newNotice.organization_id}
+                  onChange={(e) => setNewNotice({ ...newNotice, organization_id: e.organizationId })}
+                  placeholder="Digite o ID da instituição"
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="pdf">Arquivo PDF</Label>
+                <Input
+                  id="pdf"
+                  type="file"
+                  accept="application/pdf"
+                  onChange={handleFileChange}
                 />
               </div>
             </div>
@@ -223,19 +160,14 @@ export default function NoticesPage() {
               <SelectItem value="Inativo">Inativo</SelectItem>
             </SelectContent>
           </Select>
-          <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+          <Select value={organizationFilter} onValueChange={setOrganizationFilter}>
             <SelectTrigger className="w-[130px]">
-              <SelectValue placeholder="Categoria" />
+              <SelectValue placeholder="Instituição" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Todas</SelectItem>
-              <SelectItem value="Acadêmico">Acadêmico</SelectItem>
-              <SelectItem value="Matrícula">Matrícula</SelectItem>
-              <SelectItem value="Financeiro">Financeiro</SelectItem>
-              <SelectItem value="Eventos">Eventos</SelectItem>
-              <SelectItem value="Instalações">Instalações</SelectItem>
-              <SelectItem value="Emergência">Emergência</SelectItem>
-              <SelectItem value="Carreira">Carreira</SelectItem>
+              <SelectItem value="org1">Org 1</SelectItem>
+              <SelectItem value="org2">Org 2</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -246,155 +178,32 @@ export default function NoticesPage() {
           <TableHeader>
             <TableRow>
               <TableHead>Título</TableHead>
-              <TableHead>Categoria</TableHead>
+              <TableHead>Data Final</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead>Data</TableHead>
+              <TableHead>Instituição</TableHead>
               <TableHead>Visualizações</TableHead>
               <TableHead className="text-right">Ações</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredNotices.length === 0 ? (
+            {notices.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={6} className="h-24 text-center">
                   Nenhum aviso encontrado.
                 </TableCell>
               </TableRow>
             ) : (
-              filteredNotices.map((notice) => (
-                <TableRow key={notice.id}>
-                  <TableCell className="font-medium">{notice.title}</TableCell>
-                  <TableCell>{notice.category}</TableCell>
-                  <TableCell>
-                    <Badge variant={notice.status === "Ativo" ? "default" : "secondary"}>{notice.status}</Badge>
-                  </TableCell>
-                  <TableCell>{notice.date}</TableCell>
-                  <TableCell>{notice.views.toLocaleString()}</TableCell>
+              notices.map((notice) => (
+                <TableRow key={notice.noticeId}>
+                  <TableCell>{notice.title}</TableCell>
+                  <TableCell>{notice.deadline.toISOString()}</TableCell>
+                  <TableCell>{notice.status}</TableCell>
+                  <TableCell>{notice.organizationId}</TableCell>
+                  <TableCell>{notice.views}</TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
-                      <Dialog
-                        open={isEditDialogOpen && currentNotice?.id === notice.id}
-                        onOpenChange={(open) => {
-                          setIsEditDialogOpen(open)
-                          if (open) setCurrentNotice(notice)
-                        }}
-                      >
-                        <DialogTrigger asChild>
-                          <Button variant="outline" size="icon">
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent>
-                          <DialogHeader>
-                            <DialogTitle>Editar Aviso</DialogTitle>
-                            <DialogDescription>Faça alterações nos detalhes do aviso.</DialogDescription>
-                          </DialogHeader>
-                          {currentNotice && (
-                            <div className="grid gap-4 py-4">
-                              <div className="grid gap-2">
-                                <Label htmlFor="edit-title">Título</Label>
-                                <Input
-                                  id="edit-title"
-                                  value={currentNotice.title}
-                                  onChange={(e) =>
-                                    setCurrentNotice({
-                                      ...currentNotice,
-                                      title: e.target.value,
-                                    })
-                                  }
-                                />
-                              </div>
-                              <div className="grid gap-2">
-                                <Label htmlFor="edit-category">Categoria</Label>
-                                <Select
-                                  value={currentNotice.category}
-                                  onValueChange={(value) =>
-                                    setCurrentNotice({
-                                      ...currentNotice,
-                                      category: value,
-                                    })
-                                  }
-                                >
-                                  <SelectTrigger id="edit-category">
-                                    <SelectValue />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value="Acadêmico">Acadêmico</SelectItem>
-                                    <SelectItem value="Matrícula">Matrícula</SelectItem>
-                                    <SelectItem value="Financeiro">Financeiro</SelectItem>
-                                    <SelectItem value="Eventos">Eventos</SelectItem>
-                                    <SelectItem value="Instalações">Instalações</SelectItem>
-                                    <SelectItem value="Emergência">Emergência</SelectItem>
-                                    <SelectItem value="Carreira">Carreira</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                              </div>
-                              <div className="grid gap-2">
-                                <Label htmlFor="edit-status">Status</Label>
-                                <Select
-                                  value={currentNotice.status}
-                                  onValueChange={(value) =>
-                                    setCurrentNotice({
-                                      ...currentNotice,
-                                      status: value,
-                                    })
-                                  }
-                                >
-                                  <SelectTrigger id="edit-status">
-                                    <SelectValue />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value="Ativo">Ativo</SelectItem>
-                                    <SelectItem value="Inativo">Inativo</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                              </div>
-                            </div>
-                          )}
-                          <DialogFooter>
-                            <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>
-                              Cancelar
-                            </Button>
-                            <Button onClick={handleEditNotice}>Salvar Alterações</Button>
-                          </DialogFooter>
-                        </DialogContent>
-                      </Dialog>
-
-                      <Dialog
-                        open={isDeleteDialogOpen && currentNotice?.id === notice.id}
-                        onOpenChange={(open) => {
-                          setIsDeleteDialogOpen(open)
-                          if (open) setCurrentNotice(notice)
-                        }}
-                      >
-                        <DialogTrigger asChild>
-                          <Button variant="outline" size="icon">
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent>
-                          <DialogHeader>
-                            <DialogTitle>Excluir Aviso</DialogTitle>
-                            <DialogDescription>
-                              Tem certeza que deseja excluir este aviso? Esta ação não pode ser desfeita.
-                            </DialogDescription>
-                          </DialogHeader>
-                          {currentNotice && (
-                            <div className="py-4">
-                              <p className="font-medium">{currentNotice.title}</p>
-                              <p className="text-sm text-muted-foreground">Categoria: {currentNotice.category}</p>
-                            </div>
-                          )}
-                          <DialogFooter>
-                            <Button variant="outline" onClick={() => setIsDeleteDialogOpen(false)}>
-                              Cancelar
-                            </Button>
-                            <Button variant="destructive" onClick={handleDeleteNotice}>
-                              Excluir
-                            </Button>
-                          </DialogFooter>
-                        </DialogContent>
-                      </Dialog>
+                      <Button onClick={() => handleEditNotice(notice.noticeId)}><Edit className="h-4 w-4" /></Button>
+                      <Button onClick={() => handleDeleteNotice(notice.noticeId)}><Trash2 className="h-4 w-4" /></Button>
                     </div>
                   </TableCell>
                 </TableRow>
@@ -404,5 +213,5 @@ export default function NoticesPage() {
         </Table>
       </div>
     </div>
-  )
+  );
 }
