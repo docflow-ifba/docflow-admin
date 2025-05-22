@@ -24,3 +24,7 @@ export const updateNotice = async (id: string, notice: CreateNoticeDTO) => {
 export const deleteNotice = async (id: string) => {
   return api.delete(`/api/v1/notices/${id}`);
 };
+
+export const embedNotice = async (docflowNoticeId: string) => {
+  return api.post(`/api/v1/notices/embed/${docflowNoticeId}`);
+};

@@ -1,4 +1,4 @@
 export class Organization {
-  organizationId: string;
+  organizationId?: string;
   name: string;
 }

@@ -17,6 +17,7 @@ import {
 import { Organization } from "@/dtos/organization"
 import { cn } from "@/lib/utils"
 import { findOrganizations } from "@/services/organization.service"
+import { useEffect } from "react"
 
 interface OrganizationsAutocompleteProps {
   id?: string
@@ -35,15 +36,15 @@ export default function OrganizationsAutocomplete({
   const [organizations, setOrganizations] = React.useState<Organization[]>([])
   const [loading, setLoading] = React.useState(false)
 
-  const handleSearch = async (query: string) => {
-    if (query.length > 2) {
+  useEffect(() => {
+    handleSearch()
+  }, [])
+
+  const handleSearch = async (query?: string) => {
       setLoading(true)
       const result = await findOrganizations(query)
       setOrganizations(result)
       setLoading(false)
-    } else {
-      setOrganizations([])
-    }
   }
 
   const handleSelect = (selectedValue: Organization) => {

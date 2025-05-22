@@ -5,24 +5,33 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { Edit, Plus, Search, Trash2 } from "lucide-react";
-import { findNotices, createNotice, deleteNotice } from "@/services/notice.service";
+import { Edit, Plus, Search, Send, Trash2 } from "lucide-react";
+import { findNotices, createNotice, updateNotice, deleteNotice, embedNotice } from "@/services/notice.service";
 import { CreateNoticeDTO } from "@/dtos/create-notice.dto";
 import { NoticeResponseDTO } from "@/dtos/notice-response.dto";
 import OrganizationsAutocomplete from "@/components/organizations-autocomplete";
+import { formatDate } from "@/utils/date";
+import { NoticeStatusLabels } from "@/enums/notice-status";
+import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@radix-ui/react-tooltip";
 
 export default function NoticesPage() {
   const [notices, setNotices] = useState<NoticeResponseDTO[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
-  const [organizationFilter, setOrganizationFilter] = useState("all");
-  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
-  const [newNotice, setNewNotice] = useState<CreateNoticeDTO>({
+  const [statusFilter, setStatusFilter] = useState("");
+  const [organizationFilter, setOrganizationFilter] = useState("");
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  // Para diferenciar se está adicionando ou editando:
+  const [editingNoticeId, setEditingNoticeId] = useState<string | null>(null);
+
+  const initialNoticeState = {
     title: "",
     deadline: "",
     pdfBase64: "",
-    organization_id: "",
-  });
+    organization: { name: "" },
+  };
+
+  const [currentNotice, setCurrentNotice] = useState<CreateNoticeDTO>(initialNoticeState);
 
   useEffect(() => {
     const fetchNotices = async () => {
@@ -37,19 +46,38 @@ export default function NoticesPage() {
     fetchNotices();
   }, [statusFilter, searchTerm, organizationFilter]);
 
-  const handleAddNotice = async () => {
+  const handleSaveNotice = async () => {
     try {
-      await createNotice(newNotice);
-      setIsAddDialogOpen(false);
+      if (editingNoticeId) {
+        await updateNotice(editingNoticeId, currentNotice);
+      } else {
+        await createNotice(currentNotice);
+      }
+      setIsDialogOpen(false);
+      setCurrentNotice(initialNoticeState);
+      setEditingNoticeId(null);
+
       const updated = await findNotices(statusFilter, searchTerm, organizationFilter);
       setNotices(updated);
     } catch (err) {
-      console.error("Erro ao adicionar aviso:", err);
+      console.error("Erro ao salvar aviso:", err);
     }
   };
 
-  const handleEditNotice = async (noticeId: string) => {
-    console.log(noticeId)
+  const handleEmbedding = async (notice: NoticeResponseDTO) => {
+    setEditingNoticeId(notice.noticeId);
+    await embedNotice(notice.noticeId);
+  };
+
+  const handleEditNotice = (notice: NoticeResponseDTO) => {
+    setCurrentNotice({
+      title: notice.title || "",
+      deadline: new Date(notice.deadline).toISOString().split("T")[0] || "",
+      pdfBase64: "",
+      organization: notice.organization || { name: "" },
+    });
+    setEditingNoticeId(notice.noticeId);
+    setIsDialogOpen(true);
   };
 
   const handleDeleteNotice = async (noticeId: string) => {
@@ -64,10 +92,10 @@ export default function NoticesPage() {
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (!file) return
+    if (!file) return;
     const reader = new FileReader();
     reader.onloadend = () => {
-      setNewNotice((prev) => ({
+      setCurrentNotice((prev) => ({
         ...prev,
         pdfBase64: reader.result as string,
       }));
@@ -75,29 +103,44 @@ export default function NoticesPage() {
     reader.readAsDataURL(file);
   };
 
+  const dialogTitle = editingNoticeId ? "Editar Edital" : "Adicionar Novo Edital";
+  const dialogDescription = editingNoticeId
+    ? "Atualize os dados do edital."
+    : "Crie um novo edital para ser adicionado ao sistema.";
+
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold tracking-tight">Gerenciamento de Editais</h2>
-        <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+        <Dialog open={isDialogOpen} onOpenChange={(open) => {
+          setIsDialogOpen(open);
+          if (!open) {
+            setCurrentNotice(initialNoticeState);
+            setEditingNoticeId(null);
+          }
+        }}>
           <DialogTrigger asChild>
-            <Button>
+            <Button onClick={() => {
+              setCurrentNotice(initialNoticeState);
+              setEditingNoticeId(null);
+              setIsDialogOpen(true);
+            }}>
               <Plus className="mr-2 h-4 w-4" />
               Adicionar Edital
             </Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Adicionar Novo Edital</DialogTitle>
-              <DialogDescription>Crie um novo edital para ser adicionado ao sistema.</DialogDescription>
+              <DialogTitle>{dialogTitle}</DialogTitle>
+              <DialogDescription>{dialogDescription}</DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">
               <div className="grid gap-2">
                 <Label htmlFor="title">Título</Label>
                 <Input
                   id="title"
-                  value={newNotice.title}
-                  onChange={(e) => setNewNotice({ ...newNotice, title: e.target.value })}
+                  value={currentNotice.title}
+                  onChange={(e) => setCurrentNotice({ ...currentNotice, title: e.target.value })}
                   placeholder="Digite o título do aviso"
                 />
               </div>
@@ -106,17 +149,17 @@ export default function NoticesPage() {
                 <Input
                   id="deadline"
                   type="date"
-                  value={newNotice.deadline}
-                  onChange={(e) => setNewNotice({ ...newNotice, deadline: e.target.value })}
+                  value={currentNotice.deadline}
+                  onChange={(e) => setCurrentNotice({ ...currentNotice, deadline: e.target.value })}
                 />
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="organization_id">Instituição</Label>
                 <OrganizationsAutocomplete
                   id="organization_id"
-                  value={newNotice.organization_id}
-                  onChange={(e) => setNewNotice({ ...newNotice, organization_id: e.organizationId })}
-                  placeholder="Digite o ID da instituição"
+                  value={currentNotice.organization.name}
+                  onChange={(org) => setCurrentNotice({ ...currentNotice, organization: org })}
+                  placeholder="Digite o nome da instituição"
                 />
               </div>
               <div className="grid gap-2">
@@ -127,13 +170,18 @@ export default function NoticesPage() {
                   accept="application/pdf"
                   onChange={handleFileChange}
                 />
+                {editingNoticeId && !currentNotice.pdfBase64 && (
+                  <p className="text-sm text-muted-foreground">Envie um novo arquivo para substituir o atual.</p>
+                )}
               </div>
             </div>
             <DialogFooter>
-              <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>
+              <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
                 Cancelar
               </Button>
-              <Button onClick={handleAddNotice}>Adicionar Aviso</Button>
+              <Button onClick={handleSaveNotice}>
+                {editingNoticeId ? "Salvar Alterações" : "Adicionar Aviso"}
+              </Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
@@ -195,16 +243,46 @@ export default function NoticesPage() {
             ) : (
               notices.map((notice) => (
                 <TableRow key={notice.noticeId}>
-                  <TableCell>{notice.title}</TableCell>
-                  <TableCell>{notice.deadline.toISOString()}</TableCell>
-                  <TableCell>{notice.status}</TableCell>
-                  <TableCell>{notice.organizationId}</TableCell>
-                  <TableCell>{notice.views}</TableCell>
+                  <TableCell>{notice.title || "Não informado"}</TableCell>
+                  <TableCell>{notice.deadline ? formatDate(notice.deadline) : "Não informado"}</TableCell>
+                  <TableCell>{notice.status ? NoticeStatusLabels[notice.status] : "Não informado"}</TableCell>
+                  <TableCell>{notice.organization?.name || "Não informado"}</TableCell>
+                  <TableCell>{notice.views ?? "Não informado"}</TableCell>
                   <TableCell className="text-right">
-                    <div className="flex justify-end gap-2">
-                      <Button onClick={() => handleEditNotice(notice.noticeId)}><Edit className="h-4 w-4" /></Button>
-                      <Button onClick={() => handleDeleteNotice(notice.noticeId)}><Trash2 className="h-4 w-4" /></Button>
-                    </div>
+                  <div className="flex justify-end gap-2">
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button onClick={() => handleEmbedding(notice)}>
+                            <Send className="h-4 w-4" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Enviar para embedding</p>
+                        </TooltipContent>
+                      </Tooltip>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button onClick={() => handleEditNotice(notice)}>
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Editar edital</p>
+                        </TooltipContent>
+                      </Tooltip>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button onClick={() => handleDeleteNotice(notice.noticeId)}>
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Excluir edital</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
                   </TableCell>
                 </TableRow>
               ))
