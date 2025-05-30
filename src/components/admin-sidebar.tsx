@@ -1,6 +1,6 @@
-import { BarChart3, FileText, Home, LogOut, Settings, Users, X, Bot } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent } from "@/components/ui/sheet"
+import { Bot, FileText, Home, LogOut, Settings, MessageCircle, Building } from "lucide-react"
 import { Link, useLocation } from "react-router-dom"
 
 interface AdminSidebarProps {
@@ -24,6 +24,18 @@ export function AdminSidebar({ open, setOpen }: AdminSidebarProps) {
       icon: FileText,
       href: "/dashboard/editais",
       active: pathname === "/dashboard/editais",
+    },
+    {
+      label: "Instituições",
+      icon: Building,
+      href: "/dashboard/organizacoes",
+      active: pathname === "/dashboard/organizacoes",
+    },
+    {
+      label: "Chat",
+      icon: MessageCircle,
+      href: "/dashboard/chat",
+      active: pathname === "/dashboard/chat",
     },
     {
       label: "Configurações da IA",

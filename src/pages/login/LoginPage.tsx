@@ -1,30 +1,42 @@
 import type React from "react"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Eye, EyeOff, Lock, Mail } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useNavigate } from "react-router-dom"
+import { login } from "@/services/auth.service"
+import { getToken, isTokenExpired } from "@/utils/auth"
 
 export default function LoginPage() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const navigate = useNavigate()
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
+  useEffect(() => {
+    const token = getToken()
+    if (token && !isTokenExpired(token)) {
+      navigate("/dashboard")
+    }
+  }, [navigate])
 
-    setTimeout(() => {
-      if (email && password) {
-        navigate("/dashboard")
-      }
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const response = await login({ email, password })
+      localStorage.setItem("token", response.token)
+      localStorage.setItem("user", JSON.stringify(response.user))
+      navigate("/dashboard")
+    } catch (err) {
+      setError("Erro desconhecido ao fazer login: " + err)
+    } finally {
       setIsLoading(false)
-    }, 1000)
+    }
   }
 
   return (
@@ -76,6 +88,8 @@ export default function LoginPage() {
                 </Button>
               </div>
             </div>
+
+            {error && <p className="text-sm text-red-600">{error}</p>}
           </CardContent>
           <CardFooter>
             <Button type="submit" className="w-full mt-6" disabled={isLoading}>

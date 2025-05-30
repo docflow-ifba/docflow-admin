@@ -11,7 +11,7 @@ import { CreateNoticeDTO } from "@/dtos/create-notice.dto";
 import { NoticeResponseDTO } from "@/dtos/notice-response.dto";
 import OrganizationsAutocomplete from "@/components/organizations-autocomplete";
 import { formatDate } from "@/utils/date";
-import { NoticeStatusLabels } from "@/enums/notice-status";
+import { NoticeStatus, NoticeStatusLabels } from "@/enums/notice-status";
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@radix-ui/react-tooltip";
 
 export default function NoticesPage() {
@@ -36,7 +36,7 @@ export default function NoticesPage() {
   useEffect(() => {
     const fetchNotices = async () => {
       try {
-        const noticesData = await findNotices(statusFilter, searchTerm, organizationFilter);
+        const noticesData = await findNotices({status: statusFilter, title: searchTerm, organizationId: organizationFilter});
         setNotices(noticesData);
       } catch (error) {
         console.error("Erro ao buscar editais:", error);
@@ -57,10 +57,10 @@ export default function NoticesPage() {
       setCurrentNotice(initialNoticeState);
       setEditingNoticeId(null);
 
-      const updated = await findNotices(statusFilter, searchTerm, organizationFilter);
+      const updated = await findNotices({status: statusFilter, title: searchTerm, organizationId: organizationFilter});
       setNotices(updated);
     } catch (err) {
-      console.error("Erro ao salvar aviso:", err);
+      console.error("Erro ao salvar edital:", err);
     }
   };
 
@@ -83,10 +83,10 @@ export default function NoticesPage() {
   const handleDeleteNotice = async (noticeId: string) => {
     try {
       await deleteNotice(noticeId);
-      const updated = await findNotices(statusFilter, searchTerm, organizationFilter);
+      const updated = await findNotices({status: statusFilter, title: searchTerm, organizationId: organizationFilter});
       setNotices(updated);
     } catch (err) {
-      console.error("Erro ao excluir aviso:", err);
+      console.error("Erro ao excluir edital:", err);
     }
   };
 
@@ -141,7 +141,7 @@ export default function NoticesPage() {
                   id="title"
                   value={currentNotice.title}
                   onChange={(e) => setCurrentNotice({ ...currentNotice, title: e.target.value })}
-                  placeholder="Digite o título do aviso"
+                  placeholder="Digite o título do edital"
                 />
               </div>
               <div className="grid gap-2">
@@ -180,7 +180,7 @@ export default function NoticesPage() {
                 Cancelar
               </Button>
               <Button onClick={handleSaveNotice}>
-                {editingNoticeId ? "Salvar Alterações" : "Adicionar Aviso"}
+                {editingNoticeId ? "Salvar Alterações" : "Adicionar edital"}
               </Button>
             </DialogFooter>
           </DialogContent>
@@ -191,7 +191,7 @@ export default function NoticesPage() {
         <div className="relative flex-1">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Buscar avisos..."
+            placeholder="Buscar editals..."
             className="pl-8"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -237,7 +237,7 @@ export default function NoticesPage() {
             {notices.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={6} className="h-24 text-center">
-                  Nenhum aviso encontrado.
+                  Nenhum edital encontrado.
                 </TableCell>
               </TableRow>
             ) : (
@@ -251,16 +251,18 @@ export default function NoticesPage() {
                   <TableCell className="text-right">
                   <div className="flex justify-end gap-2">
                     <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Button onClick={() => handleEmbedding(notice)}>
-                            <Send className="h-4 w-4" />
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>Enviar para embedding</p>
-                        </TooltipContent>
-                      </Tooltip>
+                      {notice.status === NoticeStatus.PENDING_EMBEDDING &&
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button onClick={() => handleEmbedding(notice)}>
+                              <Send className="h-4 w-4" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Enviar para embedding</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      }
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <Button onClick={() => handleEditNotice(notice)}>
