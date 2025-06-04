@@ -1,55 +1,55 @@
-import { Button } from "@/components/ui/button"
-import { Sheet, SheetContent } from "@/components/ui/sheet"
-import { Bot, FileText, Home, LogOut, Settings, MessageCircle, Building } from "lucide-react"
-import { Link, useLocation } from "react-router-dom"
+import { Button } from '@/components/ui/button';
+import { Sheet, SheetContent } from '@/components/ui/sheet';
+import { Bot, FileText, Home, LogOut, Settings, MessageCircle, Building } from 'lucide-react';
+import { Link, useLocation } from 'react-router-dom';
 
 interface AdminSidebarProps {
-  open: boolean
-  setOpen: (open: boolean) => void
+  open: boolean;
+  setOpen: (open: boolean) => void;
 }
 
 export function AdminSidebar({ open, setOpen }: AdminSidebarProps) {
-  const location = useLocation()
-  const pathname = location.pathname
+  const location = useLocation();
+  const pathname = location.pathname;
 
   const routes = [
     {
-      label: "Início",
+      label: 'Início',
       icon: Home,
-      href: "/dashboard",
-      active: pathname === "/dashboard",
+      href: '/dashboard',
+      active: pathname === '/dashboard',
     },
     {
-      label: "Editais",
+      label: 'Editais',
       icon: FileText,
-      href: "/dashboard/editais",
-      active: pathname === "/dashboard/editais",
+      href: '/dashboard/editais',
+      active: pathname === '/dashboard/editais',
     },
     {
-      label: "Instituições",
+      label: 'Instituições',
       icon: Building,
-      href: "/dashboard/organizacoes",
-      active: pathname === "/dashboard/organizacoes",
+      href: '/dashboard/organizacoes',
+      active: pathname === '/dashboard/organizacoes',
     },
     {
-      label: "Chat",
+      label: 'Chat',
       icon: MessageCircle,
-      href: "/dashboard/chat",
-      active: pathname === "/dashboard/chat",
+      href: '/dashboard/chat',
+      active: pathname === '/dashboard/chat',
     },
+    // {
+    //   label: "Configurações da IA",
+    //   icon: Bot,
+    //   href: "/dashboard/configuracoes-ia",
+    //   active: pathname === "/dashboard/configuracoes-ia",
+    // },
     {
-      label: "Configurações da IA",
-      icon: Bot,
-      href: "/dashboard/configuracoes-ia",
-      active: pathname === "/dashboard/configuracoes-ia",
-    },
-    {
-      label: "Configurações",
+      label: 'Configurações',
       icon: Settings,
-      href: "/dashboard/configuracoes",
-      active: pathname === "/dashboard/configuracoes",
+      href: '/dashboard/configuracoes',
+      active: pathname === '/dashboard/configuracoes',
     },
-  ]
+  ];
 
   return (
     <>
@@ -58,7 +58,7 @@ export function AdminSidebar({ open, setOpen }: AdminSidebarProps) {
         <SheetContent side="left" className="p-0">
           <div className="flex h-full w-full flex-col border-r bg-background">
             <div className="flex h-14 items-center border-b px-4 justify-center w-full">
-                <img className="max-w-52" src="/public/logo/logo.png" alt="Logo do DOCFLOW" />
+              <img className="max-w-52" src="/public/logo/logo.png" alt="Logo do DOCFLOW" />
             </div>
             <div className="flex-1 overflow-auto py-2">
               <nav className="grid gap-1 px-2">
@@ -68,7 +68,7 @@ export function AdminSidebar({ open, setOpen }: AdminSidebarProps) {
                     to={route.href}
                     onClick={() => setOpen(false)}
                     className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-all hover:text-primary ${
-                      route.active ? "bg-muted font-medium text-primary" : "text-muted-foreground"
+                      route.active ? 'bg-muted font-medium text-primary' : 'text-muted-foreground'
                     }`}
                   >
                     <route.icon className="h-4 w-4" />
@@ -103,7 +103,7 @@ export function AdminSidebar({ open, setOpen }: AdminSidebarProps) {
                 key={route.href}
                 to={route.href}
                 className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-all hover:text-primary ${
-                  route.active ? "bg-muted font-medium text-primary" : "text-muted-foreground"
+                  route.active ? 'bg-muted font-medium text-primary' : 'text-muted-foreground'
                 }`}
               >
                 <route.icon className="h-4 w-4" />
@@ -122,5 +122,5 @@ export function AdminSidebar({ open, setOpen }: AdminSidebarProps) {
         </div>
       </div>
     </>
-  )
+  );
 }

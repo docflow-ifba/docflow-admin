@@ -1,10 +1,12 @@
-import { MessageDTO } from './message.dto';
+import { SenderEnum } from '@/enums/sender.enum';
 import { NoticeResponseDTO } from './notice-response.dto';
 import { UserDTO } from './user.dto';
 
 export class ConversationDTO {
-  conversationId: string;
+  conversationId?: string;
+  content: string;
+  sender: SenderEnum;
   notice: NoticeResponseDTO;
-  user: UserDTO;
-  messages: MessageDTO[];
+  createdAt: Date;
+  user?: UserDTO;
 }

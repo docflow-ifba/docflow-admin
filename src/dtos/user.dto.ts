@@ -1,4 +1,4 @@
-import { UserRole } from "@/enums/user-role.enum";
+import { UserRole } from '@/enums/user-role.enum';
 
 export class UserDTO {
   userId: string;
@@ -6,4 +6,9 @@ export class UserDTO {
   email: string;
   password: string;
   role: UserRole;
+}
+
+export class UserUpdateDTO {
+  name: string;
+  email: string;
 }

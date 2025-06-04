@@ -20,3 +20,15 @@ export const findConversations = async (noticeId?: string): Promise<Conversation
     throw error;
   }
 };
+
+export const createConversation = async (body: { noticeId: string }): Promise<ConversationDTO> => {
+  try {
+    const response = await api.post(`/v1/conversations`, {
+      noticeId: body.noticeId,
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Erro ao buscar conversas:', error);
+    throw error;
+  }
+};

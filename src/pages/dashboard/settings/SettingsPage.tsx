@@ -1,28 +1,27 @@
-import { useState } from 'react'
-import { Save } from 'lucide-react'
+import { Save } from 'lucide-react';
+import { useState } from 'react';
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Button } from "@/components/ui/button"
-import { Switch } from "@/components/ui/switch"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { updateUser } from '@/services/user.service';
+import { getUser } from '@/utils/auth';
 
 export default function SettingsPage() {
-  const [nome, setNome] = useState('João da Silva')
-  const [email, setEmail] = useState('joao@email.com')
-  const [idioma, setIdioma] = useState('pt')
-  const [notificacoesEmail, setNotificacoesEmail] = useState(true)
-  const [isSaving, setIsSaving] = useState(false)
+  const loggedUser = getUser();
+  const [user, setUser] = useState({ name: loggedUser.name, email: loggedUser.email });
+  const [isSaving, setIsSaving] = useState(false);
 
-  const handleSave = () => {
-    setIsSaving(true)
-    // Simula chamada para API
-    setTimeout(() => {
-      setIsSaving(false)
-    }, 1000)
-  }
+  const handleSave = async () => {
+    setIsSaving(true);
+    try {
+      await updateUser(user);
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   return (
     <div className="flex flex-col gap-4">
@@ -46,8 +45,8 @@ export default function SettingsPage() {
                 <Label htmlFor="nome">Nome</Label>
                 <Input
                   id="nome"
-                  value={nome}
-                  onChange={(e) => setNome(e.target.value)}
+                  value={user.name}
+                  onChange={(e) => setUser({ ...user, name: e.target.value })}
                   placeholder="Seu nome completo"
                 />
               </div>
@@ -56,8 +55,8 @@ export default function SettingsPage() {
                 <Input
                   id="email"
                   type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  value={user.email}
+                  onChange={(e) => setUser({ ...user, email: e.target.value })}
                   placeholder="seu@email.com"
                 />
               </div>
@@ -102,5 +101,5 @@ export default function SettingsPage() {
         </TabsContent>
       </Tabs>
     </div>
-  )
+  );
 }

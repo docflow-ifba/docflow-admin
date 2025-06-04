@@ -1,10 +1,9 @@
-import { getToken } from "@/utils/auth";
-import axios from "axios";
-
-const API_URL = 'http://localhost:3001/api';
+import { getToken } from '@/utils/auth';
+import axios from 'axios';
+export const API_URL = 'http://localhost:3001';
 
 export const api = axios.create({
-  baseURL: API_URL,
+  baseURL: `${API_URL}/api`,
 });
 
 api.interceptors.request.use(
@@ -17,5 +16,5 @@ api.interceptors.request.use(
   },
   (error) => {
     return Promise.reject(error);
-  }
+  },
 );
