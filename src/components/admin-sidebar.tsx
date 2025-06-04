@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
-import { Bot, FileText, Home, LogOut, Settings, MessageCircle, Building } from 'lucide-react';
+import { Building, FileText, Home, LogOut, MessageCircle, Settings } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 
 interface AdminSidebarProps {
@@ -37,12 +37,6 @@ export function AdminSidebar({ open, setOpen }: AdminSidebarProps) {
       href: '/dashboard/chat',
       active: pathname === '/dashboard/chat',
     },
-    // {
-    //   label: "Configurações da IA",
-    //   icon: Bot,
-    //   href: "/dashboard/configuracoes-ia",
-    //   active: pathname === "/dashboard/configuracoes-ia",
-    // },
     {
       label: 'Configurações',
       icon: Settings,

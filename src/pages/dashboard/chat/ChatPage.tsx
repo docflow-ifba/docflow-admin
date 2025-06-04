@@ -1,23 +1,19 @@
-import { useEffect, useRef, useState, FormEvent, KeyboardEvent } from 'react';
-import Markdown from 'react-markdown';
-import { CopyIcon, CornerDownLeft, Mic, Paperclip, Search } from 'lucide-react';
+import { CornerDownLeft, Mic, Paperclip, Search } from 'lucide-react';
+import { FormEvent, KeyboardEvent, useEffect, useRef, useState } from 'react';
 
-import CodeDisplayBlock from '@/components/code-display-block';
 import { Button } from '@/components/ui/button';
-import { ChatBubble, ChatBubbleAction, ChatBubbleAvatar, ChatBubbleMessage } from '@/components/ui/chat/chat-bubble';
 import { ChatInput } from '@/components/ui/chat/chat-input';
 import { ChatMessageList } from '@/components/ui/chat/chat-message-list';
-import NoticeCard from './NoticeCard';
 import ChatMessageInput from './ChatMessageInput';
-import ThinkSection from './ThinkSection';
+import NoticeCard from './NoticeCard';
 
-import { NoticeResponseDTO } from '@/dtos/notice-response.dto';
 import { ConversationDTO } from '@/dtos/conversation.entity';
+import { NoticeResponseDTO } from '@/dtos/notice-response.dto';
 import { SenderEnum } from '@/enums/sender.enum';
 import { useSocket } from '@/hooks/useSocket';
 import { findConversations } from '@/services/conversation.service';
 import { findNotices } from '@/services/notice.service';
-import { getAvatar } from '@/utils/auth';
+import ChatMessageBubble from './ChatMessageBubble';
 
 export default function ChatPage() {
   const [input, setInput] = useState('');
@@ -64,10 +60,6 @@ export default function ChatPage() {
     emit('question', { noticeId: selectedNotice.noticeId, prompt: input });
     setInput('');
     setIsGenerating(true);
-  };
-
-  const handleCopy = async (content: string) => {
-    await navigator.clipboard.writeText(content);
   };
 
   const handleIncomingMessage = (message: { conversation: ConversationDTO; done: boolean }) => {
@@ -120,24 +112,6 @@ export default function ChatPage() {
     return () => off(id, handleIncomingMessage);
   }, [selectedNotice, on, off]);
 
-  const renderMessageContent = (content: string) => {
-    return content.split('```').map((part, i) => {
-      if (i % 2 !== 0) {
-        return <CodeDisplayBlock key={i} code={part} lang="" />;
-      }
-      const sections = part.split(/<\/?think>/g);
-      return sections.map((section, idx) =>
-        part.includes('<think>') && idx % 2 === 1 ? (
-          <ThinkSection key={idx} content={section.trim()} />
-        ) : (
-          <div className="prose" key={idx}>
-            <Markdown>{section}</Markdown>
-          </div>
-        ),
-      );
-    });
-  };
-
   return (
     <div className="flex h-full w-full">
       {/* Sidebar */}
@@ -179,25 +153,7 @@ export default function ChatPage() {
           <div className="flex-1 overflow-y-auto py-6 px-4 max-h-[calc(100vh-130px-48px)]" ref={messagesRef}>
             <ChatMessageList>
               {messages.map((message, index) => (
-                <ChatBubble key={index} variant={message.sender === SenderEnum.USER ? 'sent' : 'received'}>
-                  <ChatBubbleAvatar
-                    src={message.sender === SenderEnum.USER ? '' : '/public/logo/logo-img.png'}
-                    fallback={message.sender === SenderEnum.USER ? getAvatar() : '🤖'}
-                  />
-                  <ChatBubbleMessage>
-                    {renderMessageContent(message.content)}
-                    {message.sender === SenderEnum.AI && index === messages.length - 1 && !isGenerating && (
-                      <div className="flex items-center mt-1.5 gap-1">
-                        <ChatBubbleAction
-                          variant="outline"
-                          className="size-5"
-                          icon={<CopyIcon className="size-3" />}
-                          onClick={() => handleCopy(message.content)}
-                        />
-                      </div>
-                    )}
-                  </ChatBubbleMessage>
-                </ChatBubble>
+                <ChatMessageBubble key={index} message={message} isGenerating={isGenerating} />
               ))}
             </ChatMessageList>
           </div>
