@@ -1,43 +1,44 @@
-import type React from "react"
+import type React from 'react';
 
-import { useEffect, useState } from "react"
-import { Eye, EyeOff, Lock, Mail } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { useNavigate } from "react-router-dom"
-import { login } from "@/services/auth.service"
-import { getToken, isTokenExpired } from "@/utils/auth"
+import { useEffect, useState } from 'react';
+import { Eye, EyeOff, Lock, Mail } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { useNavigate } from 'react-router-dom';
+import { login } from '@/services/auth.service';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function LoginPage() {
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [showPassword, setShowPassword] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const navigate = useNavigate()
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
+  const { setUser, isTokenExpired, getToken } = useAuth();
 
   useEffect(() => {
-    const token = getToken()
+    const token = getToken();
     if (token && !isTokenExpired(token)) {
-      navigate("/dashboard")
+      navigate('/app/chat');
     }
-  }, [navigate])
+  }, [navigate, isTokenExpired]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await login({ email, password })
-      localStorage.setItem("token", response.token)
-      localStorage.setItem("user", JSON.stringify(response.user))
-      navigate("/dashboard")
+      const response = await login({ email, password });
+      localStorage.setItem('token', response.token);
+      setUser(response.user);
+      navigate('/app/chat');
     } catch (err) {
-      setError("Erro desconhecido ao fazer login: " + err)
+      setError('Erro desconhecido ao fazer login: ' + err);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-muted/40 px-4">
@@ -69,7 +70,7 @@ export default function LoginPage() {
                 <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                 <Input
                   id="password"
-                  type={showPassword ? "text" : "password"}
+                  type={showPassword ? 'text' : 'password'}
                   placeholder="********"
                   className="pl-10 pr-10"
                   value={password}
@@ -84,7 +85,7 @@ export default function LoginPage() {
                   onClick={() => setShowPassword(!showPassword)}
                 >
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  <span className="sr-only">{showPassword ? "Hide password" : "Show password"}</span>
+                  <span className="sr-only">{showPassword ? 'Hide password' : 'Show password'}</span>
                 </Button>
               </div>
             </div>
@@ -93,11 +94,11 @@ export default function LoginPage() {
           </CardContent>
           <CardFooter>
             <Button type="submit" className="w-full mt-6" disabled={isLoading}>
-              {isLoading ? "Entrando..." : "Entrar"}
+              {isLoading ? 'Entrando...' : 'Entrar'}
             </Button>
           </CardFooter>
         </form>
       </Card>
     </div>
-  )
+  );
 }

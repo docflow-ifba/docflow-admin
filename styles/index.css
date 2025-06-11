@@ -118,7 +118,9 @@
     @apply bg-background text-foreground overflow-y-hidden;
   }
 
+  ul,
+  li,
   ol li {
-    @apply flex;
+    @apply flex flex-col;
   }
 }

@@ -1,4 +1,4 @@
-import { CornerDownLeft, Mic, Paperclip, Search } from 'lucide-react';
+import { CornerDownLeft, LogOut, Mic, Paperclip, Search } from 'lucide-react';
 import { FormEvent, KeyboardEvent, useEffect, useRef, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
@@ -14,6 +14,8 @@ import { useSocket } from '@/hooks/useSocket';
 import { findConversations } from '@/services/conversation.service';
 import { findNotices } from '@/services/notice.service';
 import ChatMessageBubble from './ChatMessageBubble';
+import { Link } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function ChatPage() {
   const [input, setInput] = useState('');
@@ -23,6 +25,7 @@ export default function ChatPage() {
   const [notices, setNotices] = useState<NoticeResponseDTO[]>([]);
   const [selectedNotice, setSelectedNotice] = useState<NoticeResponseDTO | null>(null);
   const [loading, setLoading] = useState(false);
+  const { logout } = useAuth();
 
   const messagesRef = useRef<HTMLDivElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
@@ -49,30 +52,34 @@ export default function ChatPage() {
     e.preventDefault();
     if (!input.trim() || !selectedNotice || isGenerating) return;
 
-    const newMessage: ConversationDTO = {
-      content: input,
-      sender: SenderEnum.USER,
-      createdAt: new Date(),
-      notice: selectedNotice,
-    };
-
-    setMessages((prev) => [...prev, newMessage]);
     emit('question', { noticeId: selectedNotice.noticeId, prompt: input });
     setInput('');
     setIsGenerating(true);
   };
 
   const handleIncomingMessage = (message: { conversation: ConversationDTO; done: boolean }) => {
+    const { conversation, done } = message;
+    const { sender, content } = conversation;
+
     setIsGenerating(true);
-    setMessages((prev) => {
-      const last = prev[prev.length - 1];
-      if (last?.sender === SenderEnum.AI) {
-        return [...prev.slice(0, -1), { ...last, content: message.conversation.content }];
+    setMessages((prevMessages) => {
+      if (sender === SenderEnum.USER) {
+        return [...prevMessages, conversation];
       }
-      return [...prev, message.conversation];
+
+      const lastMessage = prevMessages[prevMessages.length - 1];
+
+      if (lastMessage?.sender === SenderEnum.AI) {
+        return [...prevMessages.slice(0, -1), { ...lastMessage, content }];
+      }
+
+      return [...prevMessages, conversation];
     });
 
-    if (message.done) setIsGenerating(false);
+    if (done && sender === SenderEnum.AI) {
+      setIsGenerating(false);
+    }
+
     scrollToBottom();
   };
 
@@ -117,7 +124,14 @@ export default function ChatPage() {
       {/* Sidebar */}
       <aside className="w-[30%] flex flex-col bg-white border border-gray-200 border-r-0 rounded-tl-md rounded-bl-md">
         <div className="p-4 border-b">
-          <h2 className="text-2xl font-bold mb-6">Chat</h2>
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-bold">Chat</h2>
+            <Button variant="outline" className="justify-start" asChild>
+              <Link to="/login" onClick={() => logout()}>
+                <LogOut className="h-4 w-4" />
+              </Link>
+            </Button>
+          </div>
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-gray-400" />
             <input

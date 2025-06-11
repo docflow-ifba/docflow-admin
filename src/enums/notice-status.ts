@@ -1,11 +1,13 @@
 export enum NoticeStatus {
-  PENDING_EMBEDDING = 'PENDING_EMBEDDING',
-  EMBEDDING = 'EMBEDDING',
-  EMBEDDED = 'EMBEDDED',
+  PENDING = 'PENDING',
+  PROCESSING = 'PROCESSING',
+  PROCESSED = 'PROCESSED',
+  ERROR = 'ERROR',
 }
 
 export const NoticeStatusLabels: Record<NoticeStatus, string> = {
-  [NoticeStatus.PENDING_EMBEDDING]: 'Pendente de Embedding',
-  [NoticeStatus.EMBEDDING]: 'Embedando',
-  [NoticeStatus.EMBEDDED]: 'Embedado',
+  [NoticeStatus.PENDING]: 'Pendente',
+  [NoticeStatus.PROCESSING]: 'Processando',
+  [NoticeStatus.PROCESSED]: 'Processado',
+  [NoticeStatus.ERROR]: 'Erro',
 };

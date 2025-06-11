@@ -2,11 +2,11 @@ import { useState } from 'react';
 import { ChatBubble, ChatBubbleAvatar, ChatBubbleMessage, ChatBubbleAction } from '@/components/ui/chat/chat-bubble';
 import { CopyIcon, CheckIcon } from 'lucide-react';
 import { SenderEnum } from '@/enums/sender.enum';
-import { getAvatar } from '@/utils/auth';
 import CodeDisplayBlock from '@/components/code-display-block';
 import ThinkSection from './ThinkSection';
 import Markdown from 'react-markdown';
 import { ConversationDTO } from '@/dtos/conversation.entity';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface ChatMessageBubbleProps {
   message: ConversationDTO;
@@ -15,6 +15,7 @@ interface ChatMessageBubbleProps {
 
 export default function ChatMessageBubble({ message, isGenerating }: ChatMessageBubbleProps) {
   const [copied, setCopied] = useState(false);
+  const { getAvatar } = useAuth();
 
   const handleCopy = (content: string) => {
     navigator.clipboard.writeText(content);

@@ -1,8 +1,5 @@
-import { useState, useEffect } from 'react';
+import OrganizationsAutocomplete from '@/components/organizations-autocomplete';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import {
   Dialog,
   DialogContent,
@@ -12,24 +9,23 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Edit, Plus, Search, Send, Trash2 } from 'lucide-react';
-import { findNotices, createNotice, updateNotice, deleteNotice, embedNotice } from '@/services/notice.service';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { NoticeStatusIcons } from '@/constants/NoticeStatusIcons';
 import { CreateNoticeDTO } from '@/dtos/create-notice.dto';
 import { NoticeResponseDTO } from '@/dtos/notice-response.dto';
-import OrganizationsAutocomplete from '@/components/organizations-autocomplete';
+import { NoticeStatus } from '@/enums/notice-status';
+import { createNotice, deleteNotice, embedNotice, findNotices, updateNotice } from '@/services/notice.service';
 import { formatDate } from '@/utils/date';
-import { NoticeStatus, NoticeStatusLabels } from '@/enums/notice-status';
-import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@radix-ui/react-tooltip';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@radix-ui/react-tooltip';
+import { Edit, Plus, Search, Send, Trash2 } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 export default function NoticesPage() {
   const [notices, setNotices] = useState<NoticeResponseDTO[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('');
-  const [organizationFilter, setOrganizationFilter] = useState('');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-
-  // Para diferenciar se está adicionando ou editando:
   const [editingNoticeId, setEditingNoticeId] = useState<string | null>(null);
 
   const initialNoticeState = {
@@ -45,9 +41,7 @@ export default function NoticesPage() {
     const fetchNotices = async () => {
       try {
         const noticesData = await findNotices({
-          status: statusFilter,
           title: searchTerm,
-          organizationId: organizationFilter,
         });
         setNotices(noticesData);
       } catch (error) {
@@ -56,7 +50,11 @@ export default function NoticesPage() {
     };
 
     fetchNotices();
-  }, [statusFilter, searchTerm, organizationFilter]);
+
+    const intervalId: NodeJS.Timeout = setInterval(fetchNotices, 10000);
+
+    return () => clearInterval(intervalId);
+  }, [searchTerm]);
 
   const handleSaveNotice = async () => {
     try {
@@ -70,9 +68,7 @@ export default function NoticesPage() {
       setEditingNoticeId(null);
 
       const updated = await findNotices({
-        status: statusFilter,
         title: searchTerm,
-        organizationId: organizationFilter,
       });
       setNotices(updated);
     } catch (err) {
@@ -83,6 +79,10 @@ export default function NoticesPage() {
   const handleEmbedding = async (notice: NoticeResponseDTO) => {
     setEditingNoticeId(notice.noticeId);
     await embedNotice(notice.noticeId);
+    const updated = await findNotices({
+      title: searchTerm,
+    });
+    setNotices(updated);
   };
 
   const handleEditNotice = (notice: NoticeResponseDTO) => {
@@ -100,9 +100,7 @@ export default function NoticesPage() {
     try {
       await deleteNotice(noticeId);
       const updated = await findNotices({
-        status: statusFilter,
         title: searchTerm,
-        organizationId: organizationFilter,
       });
       setNotices(updated);
     } catch (err) {
@@ -215,28 +213,6 @@ export default function NoticesPage() {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-        <div className="flex gap-2">
-          <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-[130px]">
-              <SelectValue placeholder="Status" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todos</SelectItem>
-              <SelectItem value="Ativo">Ativo</SelectItem>
-              <SelectItem value="Inativo">Inativo</SelectItem>
-            </SelectContent>
-          </Select>
-          <Select value={organizationFilter} onValueChange={setOrganizationFilter}>
-            <SelectTrigger className="w-[130px]">
-              <SelectValue placeholder="Instituição" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todas</SelectItem>
-              <SelectItem value="org1">Org 1</SelectItem>
-              <SelectItem value="org2">Org 2</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
       </div>
 
       <div className="rounded-md border">
@@ -262,12 +238,12 @@ export default function NoticesPage() {
                 <TableRow key={notice.noticeId}>
                   <TableCell>{notice.title || 'Não informado'}</TableCell>
                   <TableCell>{notice.deadline ? formatDate(notice.deadline) : 'Não informado'}</TableCell>
-                  <TableCell>{notice.status ? NoticeStatusLabels[notice.status] : 'Não informado'}</TableCell>
+                  <TableCell>{NoticeStatusIcons[notice.status] || 'Não informado'}</TableCell>
                   <TableCell>{notice.organization?.name || 'Não informado'}</TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
                       <TooltipProvider>
-                        {notice.status === NoticeStatus.PENDING_EMBEDDING && (
+                        {notice.status !== NoticeStatus.PROCESSED && (
                           <Tooltip>
                             <TooltipTrigger asChild>
                               <Button onClick={() => handleEmbedding(notice)}>

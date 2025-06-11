@@ -1,8 +1,10 @@
+import { useAuth } from '@/contexts/AuthContext';
 import { Navigate, Outlet } from 'react-router-dom';
-import { isAuthenticated } from '@/utils/auth';
 
 export default function PrivateRoute() {
-  if (!isAuthenticated()) {
+  const { isTokenExpired, getToken } = useAuth();
+
+  if (getToken() === null || isTokenExpired(getToken()!)) {
     return <Navigate to="/login" replace />;
   }
   return <Outlet />;

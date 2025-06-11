@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
-import { Building, FileText, Home, LogOut, MessageCircle, Settings } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import { Building, FileText, LogOut, MessageCircle, Settings } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 
 interface AdminSidebarProps {
@@ -9,39 +10,40 @@ interface AdminSidebarProps {
 }
 
 export function AdminSidebar({ open, setOpen }: AdminSidebarProps) {
+  const { logout } = useAuth();
   const location = useLocation();
   const pathname = location.pathname;
 
   const routes = [
+    // {
+    //   label: 'Início',
+    //   icon: Home,
+    //   href: '/app',
+    //   active: pathname === '/app',
+    // },
     {
-      label: 'Início',
-      icon: Home,
-      href: '/dashboard',
-      active: pathname === '/dashboard',
+      label: 'Chat',
+      icon: MessageCircle,
+      href: '/app/chat',
+      active: pathname === '/app/chat',
     },
     {
       label: 'Editais',
       icon: FileText,
-      href: '/dashboard/editais',
-      active: pathname === '/dashboard/editais',
+      href: '/app/editais',
+      active: pathname === '/app/editais',
     },
     {
       label: 'Instituições',
       icon: Building,
-      href: '/dashboard/organizacoes',
-      active: pathname === '/dashboard/organizacoes',
-    },
-    {
-      label: 'Chat',
-      icon: MessageCircle,
-      href: '/dashboard/chat',
-      active: pathname === '/dashboard/chat',
+      href: '/app/organizacoes',
+      active: pathname === '/app/organizacoes',
     },
     {
       label: 'Configurações',
       icon: Settings,
-      href: '/dashboard/configuracoes',
-      active: pathname === '/dashboard/configuracoes',
+      href: '/app/configuracoes',
+      active: pathname === '/app/configuracoes',
     },
   ];
 
@@ -108,8 +110,8 @@ export function AdminSidebar({ open, setOpen }: AdminSidebarProps) {
         </div>
         <div className="mt-auto border-t p-4">
           <Button variant="outline" className="w-full justify-start" asChild>
-            <Link to="/login">
-              <LogOut className="mr-2 h-4 w-4" />
+            <Link to="/login" onClick={() => logout()}>
+              <LogOut className="mr-2 h-4 w-4" onClick={() => logout()} />
               Sair
             </Link>
           </Button>

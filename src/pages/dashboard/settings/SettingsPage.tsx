@@ -6,18 +6,25 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useAuth } from '@/contexts/AuthContext';
 import { updateUser } from '@/services/user.service';
-import { getUser } from '@/utils/auth';
 
 export default function SettingsPage() {
-  const loggedUser = getUser();
-  const [user, setUser] = useState({ name: loggedUser.name, email: loggedUser.email });
+  const { user: loggedUser, setUser: setLoggedUser } = useAuth();
+  const [user, setUser] = useState({
+    userId: loggedUser?.userId ?? '',
+    name: loggedUser?.name ?? '',
+    email: loggedUser?.email ?? '',
+  });
   const [isSaving, setIsSaving] = useState(false);
 
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      await updateUser(user);
+      if (user && user.userId) {
+        await updateUser(user.userId, user);
+        setLoggedUser({ ...loggedUser, name: user.name, email: user.email });
+      }
     } finally {
       setIsSaving(false);
     }
