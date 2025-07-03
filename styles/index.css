@@ -1,5 +1,7 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
+@import 'rc-tooltip/assets/bootstrap.css';
+@plugin "@tailwindcss/typography";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -117,10 +119,45 @@
   body {
     @apply bg-background text-foreground overflow-y-hidden;
   }
+}
 
-  ul,
-  li,
-  ol li {
-    @apply flex flex-col;
+input {
+  @apply relative;
+}
+
+input[type='date']::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  right: 10px;
+  position: absolute;
+}
+
+.react-pdf__Document {
+  @apply mx-auto;
+}
+
+.prose {
+  @apply flex flex-col;
+
+  ol,
+  ul {
+    @apply my-0 flex flex-col;
+
+    li {
+      @apply my-0;
+
+      p {
+        @apply my-0;
+      }
+    }
   }
+}
+
+.rc-tooltip-inner {
+  @apply px-3 py-2 text-sm text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-xs;
+}
+
+.rc-tooltip-placement-top .rc-tooltip-arrow {
+  margin-left: -10px;
+  border-width: 10px 10px 0;
+  @apply border-t-gray-900;
 }

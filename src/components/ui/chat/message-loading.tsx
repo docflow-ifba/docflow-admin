@@ -1,6 +1,12 @@
-export default function MessageLoading() {
+export default function MessageLoading({ color }: { color?: string }) {
   return (
-    <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" className="text-white">
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      xmlns="http://www.w3.org/2000/svg"
+      className={`${color ? color : 'text-white'}`}
+    >
       <circle cx="4" cy="12" r="2" fill="currentColor">
         <animate
           id="spinner_qFRN"

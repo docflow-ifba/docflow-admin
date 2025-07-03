@@ -32,3 +32,12 @@ export const createConversation = async (body: { noticeId: string }): Promise<Co
     throw error;
   }
 };
+
+export const clearConversations = async (noticeId: string): Promise<void> => {
+  try {
+    await api.delete(`/v1/conversations/clear/${noticeId}`);
+  } catch (error) {
+    console.error('Erro ao limpar conversas:', error);
+    throw error;
+  }
+};

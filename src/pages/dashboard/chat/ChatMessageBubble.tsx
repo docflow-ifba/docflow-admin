@@ -4,9 +4,10 @@ import { CopyIcon, CheckIcon } from 'lucide-react';
 import { SenderEnum } from '@/enums/sender.enum';
 import CodeDisplayBlock from '@/components/code-display-block';
 import ThinkSection from './ThinkSection';
-import Markdown from 'react-markdown';
 import { ConversationDTO } from '@/dtos/conversation.entity';
 import { useAuth } from '@/contexts/AuthContext';
+import MarkdownRenderer from '../notices/MarkdownRenderer';
+import MessageLoading from '@/components/ui/chat/message-loading';
 
 interface ChatMessageBubbleProps {
   message: ConversationDTO;
@@ -24,6 +25,7 @@ export default function ChatMessageBubble({ message, isGenerating }: ChatMessage
   };
 
   const renderMessageContent = (content: string) => {
+    if (!content) return <MessageLoading color="text-primary" />;
     return content.split('```').map((part, i) => {
       if (i % 2 !== 0) {
         return <CodeDisplayBlock key={i} code={part} lang="" />;
@@ -33,9 +35,7 @@ export default function ChatMessageBubble({ message, isGenerating }: ChatMessage
         part.includes('<think>') && idx % 2 === 1 ? (
           <ThinkSection key={idx} content={section.trim()} />
         ) : (
-          <div className="prose" key={idx}>
-            <Markdown>{section}</Markdown>
-          </div>
+          <MarkdownRenderer markdown={section} />
         ),
       );
     });
@@ -48,7 +48,7 @@ export default function ChatMessageBubble({ message, isGenerating }: ChatMessage
         fallback={message.sender === SenderEnum.USER ? getAvatar() : '🤖'}
       />
       <ChatBubbleMessage>
-        {renderMessageContent(message.content)}
+        {message.sender === SenderEnum.AI ? renderMessageContent(message.content) : message.content}
         {message.sender === SenderEnum.AI && !isGenerating && (
           <div className="flex items-center mt-1.5 gap-1 absolute left-12 opacity-0 group-hover:opacity-100 transition-opacity">
             <ChatBubbleAction

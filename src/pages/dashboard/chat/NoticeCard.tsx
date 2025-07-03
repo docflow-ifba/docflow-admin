@@ -1,19 +1,36 @@
 import { NoticeResponseDTO } from '@/dtos/notice-response.dto';
+import { clearConversations } from '@/services/conversation.service';
 import { formatDate } from '@/utils/date';
-import { BookOpen } from 'lucide-react';
+import { BookOpen, Trash2 } from 'lucide-react';
 import React from 'react';
+import toast from 'react-hot-toast';
+import Tooltip from 'rc-tooltip';
 
 interface NoticeCardProps {
   notice: NoticeResponseDTO;
   isSelected: boolean;
   onClick: () => void;
+  unselect: () => void;
 }
 
-const NoticeCard: React.FC<NoticeCardProps> = ({ notice, isSelected, onClick }) => {
+const NoticeCard: React.FC<NoticeCardProps> = ({ notice, isSelected, onClick, unselect }) => {
+  const handleClearConversations = async () => {
+    try {
+      await clearConversations(notice.noticeId);
+      unselect();
+      toast.success('Histórico de conversas limpo com sucesso');
+    } catch (error) {
+      console.error('Erro ao limpar histórico de conversas:', error);
+      toast.error('Erro ao limpar histórico de conversas');
+    }
+  };
+
   return (
     <div
-      className={`p-4 mb-4 rounded-xl border transition-all duration-300 cursor-pointer hover:shadow-md ${
-        isSelected ? 'border-primary/40 bg-primary/5' : 'border-gray-200 bg-white hover:border-primary/20'
+      className={`flex justify-between items-center p-4 mb-4 rounded-xl border transition-all duration-200 cursor-pointer ${
+        isSelected
+          ? 'border-primary/40 bg-primary/5'
+          : 'border-gray-200 bg-white hover:border-primary/20 hover:bg-gray-50'
       }`}
       onClick={onClick}
     >
@@ -28,6 +45,11 @@ const NoticeCard: React.FC<NoticeCardProps> = ({ notice, isSelected, onClick }) 
           </p>
         </div>
       </div>
+      <Tooltip placement="top" overlay={<p>Limpar histórico</p>}>
+        <div className="w-8 h-8 hover:bg-gray-100 flex items-center justify-center rounded-full transition-colors duration-200">
+          <Trash2 className="w-4 h-4" onClick={handleClearConversations} />
+        </div>
+      </Tooltip>
     </div>
   );
 };

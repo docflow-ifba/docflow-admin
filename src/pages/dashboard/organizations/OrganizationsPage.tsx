@@ -1,19 +1,33 @@
-import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
-import { Edit, Plus, Trash2, Search } from "lucide-react";
-import { findOrganizations, createOrganization, updateOrganization, deleteOrganization } from "@/services/organization.service";
-import { Organization } from "@/dtos/organization";
+import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { Edit, Plus, Trash2, Search } from 'lucide-react';
+import {
+  findOrganizations,
+  createOrganization,
+  updateOrganization,
+  deleteOrganization,
+} from '@/services/organization.service';
+import { Organization } from '@/dtos/organization';
+import Tooltip from 'rc-tooltip';
 
 export default function OrganizationsPage() {
   const [organizations, setOrganizations] = useState<Organization[]>([]);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState('');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingOrgId, setEditingOrgId] = useState<string | null>(null);
-  const [currentOrg, setCurrentOrg] = useState<Organization>({ name: "" });
+  const [currentOrg, setCurrentOrg] = useState<Organization>({ name: '' });
 
   useEffect(() => {
     const fetchOrganizations = async () => {
@@ -21,7 +35,7 @@ export default function OrganizationsPage() {
         const data = await findOrganizations(searchTerm);
         setOrganizations(data);
       } catch (error) {
-        console.error("Erro ao buscar instituições:", error);
+        console.error('Erro ao buscar instituições:', error);
       }
     };
     fetchOrganizations();
@@ -35,12 +49,12 @@ export default function OrganizationsPage() {
         await createOrganization(currentOrg);
       }
       setIsDialogOpen(false);
-      setCurrentOrg({ name: "" });
+      setCurrentOrg({ name: '' });
       setEditingOrgId(null);
       const updated = await findOrganizations(searchTerm);
       setOrganizations(updated);
     } catch (err) {
-      console.error("Erro ao salvar instituição:", err);
+      console.error('Erro ao salvar instituição:', err);
     }
   };
 
@@ -56,7 +70,7 @@ export default function OrganizationsPage() {
       const updated = await findOrganizations(searchTerm);
       setOrganizations(updated);
     } catch (err) {
-      console.error("Erro ao excluir instituição:", err);
+      console.error('Erro ao excluir instituição:', err);
     }
   };
 
@@ -64,28 +78,33 @@ export default function OrganizationsPage() {
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold tracking-tight">Gerenciamento de Instituições</h2>
-        <Dialog open={isDialogOpen} onOpenChange={(open) => {
-          setIsDialogOpen(open);
-          if (!open) {
-            setCurrentOrg({ name: "" });
-            setEditingOrgId(null);
-          }
-        }}>
-          <DialogTrigger asChild>
-            <Button onClick={() => {
-              setCurrentOrg({ name: "" });
+        <Dialog
+          open={isDialogOpen}
+          onOpenChange={(open) => {
+            setIsDialogOpen(open);
+            if (!open) {
+              setCurrentOrg({ name: '' });
               setEditingOrgId(null);
-              setIsDialogOpen(true);
-            }}>
+            }
+          }}
+        >
+          <DialogTrigger asChild>
+            <Button
+              onClick={() => {
+                setCurrentOrg({ name: '' });
+                setEditingOrgId(null);
+                setIsDialogOpen(true);
+              }}
+            >
               <Plus className="mr-2 h-4 w-4" />
               Nova Instituição
             </Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>{editingOrgId ? "Editar Instituição" : "Nova Instituição"}</DialogTitle>
+              <DialogTitle>{editingOrgId ? 'Editar Instituição' : 'Nova Instituição'}</DialogTitle>
               <DialogDescription>
-                {editingOrgId ? "Atualize o nome da instituição." : "Adicione uma nova instituição ao sistema."}
+                {editingOrgId ? 'Atualize o nome da instituição.' : 'Adicione uma nova instituição ao sistema.'}
               </DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">
@@ -103,9 +122,7 @@ export default function OrganizationsPage() {
               <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
                 Cancelar
               </Button>
-              <Button onClick={handleSaveOrganization}>
-                {editingOrgId ? "Salvar Alterações" : "Adicionar"}
-              </Button>
+              <Button onClick={handleSaveOrganization}>{editingOrgId ? 'Salvar Alterações' : 'Adicionar'}</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
@@ -142,12 +159,16 @@ export default function OrganizationsPage() {
                   <TableCell>{org.name}</TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
-                      <Button onClick={() => handleEditOrganization(org)}>
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                      <Button onClick={() => handleDeleteOrganization(org.organizationId!)}>
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                      <Tooltip placement="top" overlay={<span>Editar</span>}>
+                        <Button onClick={() => handleEditOrganization(org)}>
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                      </Tooltip>
+                      <Tooltip placement="top" overlay={<span>Cancelar</span>}>
+                        <Button onClick={() => handleDeleteOrganization(org.organizationId!)}>
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </Tooltip>
                     </div>
                   </TableCell>
                 </TableRow>

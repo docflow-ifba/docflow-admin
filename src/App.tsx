@@ -6,7 +6,7 @@ import ChatPage from './pages/dashboard/chat/ChatPage';
 import DashboardPage from './pages/dashboard/DashboardPage';
 import DashboardLayout from './pages/dashboard/layout';
 import NoticesPage from './pages/dashboard/notices/NoticesPage';
-import OrganizationsPage from './pages/dashboard/organizations/OrganizatiosPage';
+import OrganizationsPage from './pages/dashboard/organizations/OrganizationsPage';
 import SettingsPage from './pages/dashboard/settings/SettingsPage';
 import LoginPage from './pages/login/LoginPage';
 

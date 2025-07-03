@@ -1,47 +1,27 @@
 import { NoticeStatus, NoticeStatusLabels } from '@/enums/notice-status';
-import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from '@radix-ui/react-tooltip';
 import { Clock, Loader2, CheckCircle, XCircle } from 'lucide-react';
 import { JSX } from 'react';
+import Tooltip from 'rc-tooltip';
 
 export const NoticeStatusIcons: Record<NoticeStatus, JSX.Element> = {
   [NoticeStatus.PENDING]: (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Clock className="text-yellow-700" />
-        </TooltipTrigger>
-        <TooltipContent>{NoticeStatusLabels[NoticeStatus.PENDING]}</TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+    <Tooltip placement="top" overlay={<span>{NoticeStatusLabels[NoticeStatus.PENDING]}</span>}>
+      <Clock className="text-yellow-700 cursor-default" />
+    </Tooltip>
   ),
   [NoticeStatus.PROCESSING]: (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Loader2 className="animate-spin text-blue-700" />
-        </TooltipTrigger>
-        <TooltipContent>{NoticeStatusLabels[NoticeStatus.PROCESSING]}</TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+    <Tooltip placement="top" overlay={<span>{NoticeStatusLabels[NoticeStatus.PROCESSING]}</span>}>
+      <Loader2 className="animate-spin text-blue-700 cursor-default" />
+    </Tooltip>
   ),
   [NoticeStatus.PROCESSED]: (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <CheckCircle className="text-green-700" />
-        </TooltipTrigger>
-        <TooltipContent>{NoticeStatusLabels[NoticeStatus.PROCESSED]}</TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+    <Tooltip placement="top" overlay={<span>{NoticeStatusLabels[NoticeStatus.PROCESSED]}</span>}>
+      <CheckCircle className="text-green-700 cursor-default" />
+    </Tooltip>
   ),
   [NoticeStatus.ERROR]: (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <XCircle className="text-red-700" />
-        </TooltipTrigger>
-        <TooltipContent>{NoticeStatusLabels[NoticeStatus.ERROR]}</TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+    <Tooltip placement="top" overlay={<span>{NoticeStatusLabels[NoticeStatus.ERROR]}</span>}>
+      <XCircle className="text-red-700 cursor-default" />
+    </Tooltip>
   ),
 } as const;

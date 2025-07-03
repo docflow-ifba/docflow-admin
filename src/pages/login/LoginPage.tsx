@@ -9,13 +9,13 @@ import { Label } from '@/components/ui/label';
 import { useNavigate } from 'react-router-dom';
 import { login } from '@/services/auth.service';
 import { useAuth } from '@/contexts/AuthContext';
+import toast from 'react-hot-toast';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
   const { setUser, isTokenExpired, getToken } = useAuth();
 
@@ -33,8 +33,9 @@ export default function LoginPage() {
       localStorage.setItem('token', response.token);
       setUser(response.user);
       navigate('/app/chat');
+      toast.success('Login realizado com sucesso!');
     } catch (err) {
-      setError('Erro desconhecido ao fazer login: ' + err);
+      toast.error('Erro ao realizar login. Verifique suas credenciais e tente novamente.');
     } finally {
       setIsLoading(false);
     }
@@ -89,8 +90,6 @@ export default function LoginPage() {
                 </Button>
               </div>
             </div>
-
-            {error && <p className="text-sm text-red-600">{error}</p>}
           </CardContent>
           <CardFooter>
             <Button type="submit" className="w-full mt-6" disabled={isLoading}>

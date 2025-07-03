@@ -153,6 +153,7 @@ export default function ChatPage() {
                 notice={notice}
                 isSelected={selectedNotice?.noticeId === notice.noticeId}
                 onClick={() => handleSelectNotice(notice)}
+                unselect={() => setSelectedNotice(null)}
               />
             ))
           ) : (
